@@ -4,6 +4,8 @@ const Brokrage = require("../models/brokrage");
 const Users = require("../models/users");
 const { decryptPassword } = require("../utility/common");
 const ErrorClass = require("../utility/error");
+const { sendEmail } = require("../utility/mail/mail");
+const { customerPayoutRequest } = require("../utility/mail/mailTemplates");
 
 module.exports = {
   login: async (req, res, next) => {
@@ -11,7 +13,7 @@ module.exports = {
       const { email, mobile, password } = req.body;
       const isUserExits = await Users.findOne({
         $or: [{ email }, { mobile }],
-      }).select("-_id -__v -createdAt -updatedAt");
+      }).select("-_id -__v -createdAt -updatedAt -paymentMethod._id");
       if (!isUserExits?.email || !isUserExits?.mobile) {
         throw new ErrorClass("User is not existed !", 400);
       }
@@ -25,6 +27,7 @@ module.exports = {
         ucc: isUserExits.ucc,
         mobile: isUserExits.mobile,
         name: isUserExits.name,
+        paymentMethod: isUserExits?.paymentMethod,
       };
 
       const token = signToken(userDetails);
@@ -74,7 +77,10 @@ module.exports = {
   },
   updateUserBrokrage: async (req, res, next) => {
     try {
-      const { email, mobile } = req?.user;
+      const { email, mobile, paymentMethod, name } = req?.user;
+      if (!paymentMethod?.method || !paymentMethod?.paymentAddress) {
+        throw new ErrorClass("Select the payment method", 400);
+      }
       const { dates } = req?.body;
       const { brokrage } = await Brokrage.findOne(
         {
@@ -116,6 +122,17 @@ module.exports = {
         { $set: { brokrage: updatedBrokrageArr } },
         { new: true }
       );
+      await sendEmail({
+        to: [process.env.REQEST_PAYOUT_EMAIL, "himanshujain044@gmail.com"],
+        subject: "Requested for pay-out",
+        html: customerPayoutRequest({
+          name,
+          totalAmountToPaid,
+          dates,
+          paymentMethod,
+        }),
+        isMultipleReceiver: true,
+      });
       res.status(200).send({
         code: 200,
         message: "User's brokrage updated successfully !",
@@ -129,14 +146,21 @@ module.exports = {
   getPaidUserBrokrage: async (req, res, next) => {
     try {
       const { email, mobile } = req?.user;
-      const brokrage = await Brokrage.findOne({
-        email,
-        mobile,
-        // "brokrage.status": "paid",
-        brokrage: { $elemMatch: { status: "paid" } },
-      });
+      const brokrage = await Brokrage.aggregate([
+        { $match: { email, mobile } }, // Match the user document
+        { $unwind: "$brokrage" }, // Unwind the brokrage array
+        { $match: { "brokrage.status": "paid" } }, // Filter brokrage array to only include entries with status "paid"
+        {
+          $group: {
+            _id: "$_id",
+            email: { $first: "$email" },
+            mobile: { $first: "$mobile" },
+            brokrage: { $push: "$brokrage" }, // Group back the filtered brokrage entries
+          },
+        },
+        { $project: { _id: 0 } }, // Exclude _id field
+      ]);
 
-      console.log("134", brokrage);
       res.status(200).send({
         code: 200,
         message: "User's paid brokrage fetched successfully !",

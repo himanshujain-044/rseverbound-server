@@ -8,6 +8,9 @@ const Users = require("../models/users");
 const Brokrage = require("../models/brokrage");
 const { encryptPassword } = require("../utility/common");
 const { AMOUNT_PAID } = require("../constants/enum");
+const { sendEmail } = require("../utility/mail/mail");
+const { customersAddedNotification } = require("../utility/mail/mailTemplates");
+const ErrorClass = require("../utility/error");
 
 module.exports = {
   getAllCustomers: async (req, res, next) => {
@@ -53,6 +56,13 @@ module.exports = {
             password: encryptPassword(user?.ucc),
           };
         });
+      await sendWelcomeEmail(
+        //results
+        [
+          { name: "himasnhu", email: "himanshujain044@gmail.com" },
+          { name: "madhuvan", email: "madhuvandigitalstech@gmail.com" },
+        ]
+      );
       await Users.insertMany(results);
       res
         .status(200)
@@ -82,8 +92,8 @@ module.exports = {
 
       await updateBrokrage(upstoxRes.data?.list);
       res
-        .status(200)
-        .send({ code: 200, message: "Brokrage fetched successfully !" });
+        .status(201)
+        .send({ code: 201, message: "Brokrage fetched successfully !" });
     } catch (err) {
       console.error(err?.response);
       next(err?.response?.data?.error || err);
@@ -94,11 +104,18 @@ async function updateBrokrage(brokrageList = []) {
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(today.getDate() - 1);
+  if ([0, 6].includes(yesterday.getDay())) {
+    throw new ErrorClass("Today is Weekend !", 400);
+  }
   return Promise.all(
     brokrageList.map(async (brokrage) => {
       if (brokrage?.email && brokrage?.mobile) {
         await Brokrage.findOneAndUpdate(
-          { email: brokrage?.email, mobile: brokrage?.mobile },
+          {
+            email: brokrage?.email,
+            mobile: brokrage?.mobile,
+            "brokrage.date": { $ne: yesterday.toDateString() },
+          },
           {
             $set: { email: brokrage?.email, mobile: brokrage?.mobile },
             $addToSet: {
@@ -113,6 +130,18 @@ async function updateBrokrage(brokrageList = []) {
         );
       }
       return;
+    })
+  );
+}
+async function sendWelcomeEmail(users = []) {
+  return Promise.all(
+    users.map(async (user) => {
+      const { name, email } = user;
+      await sendEmail({
+        to: email,
+        subject: "Welcome to 50% Braokrage Sharing Under Himanshu",
+        html: customersAddedNotification({ name }),
+      });
     })
   );
 }
