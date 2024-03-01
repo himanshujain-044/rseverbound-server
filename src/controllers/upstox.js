@@ -2,10 +2,10 @@ const axios = require("axios");
 const moment = require("moment");
 const {
   getAllCustomers,
-  getCustomersBrokrage,
+  getCustomersBrokerage,
 } = require("../constants/upstoxAPIEndPoints");
 const Users = require("../models/users");
-const Brokrage = require("../models/brokrage");
+const Brokerage = require("../models/brokerage");
 const { encryptPassword } = require("../utility/common");
 const { AMOUNT_PAID } = require("../constants/enum");
 const { sendEmail } = require("../utility/mail/mail");
@@ -72,7 +72,7 @@ module.exports = {
       next(err?.response?.data?.error || err);
     }
   },
-  getCustomersBrokrage: async (req, res, next) => {
+  getCustomersBrokerage: async (req, res, next) => {
     try {
       const { accessToken } = req.query;
       const option = {
@@ -85,22 +85,22 @@ module.exports = {
         Accept: "application/json",
         Authorization: `Bearer ${accessToken}`,
       };
-      const upstoxRes = await axios.get(getCustomersBrokrage, {
+      const upstoxRes = await axios.get(getCustomersBrokerage, {
         headers: header,
         params: option,
       });
 
-      await updateBrokrage(upstoxRes.data?.list);
+      await updateBrokerage(upstoxRes.data?.list);
       res
         .status(201)
-        .send({ code: 201, message: "Brokrage fetched successfully !" });
+        .send({ code: 201, message: "Brokerage fetched successfully !" });
     } catch (err) {
       console.error(err?.response);
       next(err?.response?.data?.error || err);
     }
   },
 };
-async function updateBrokrage(brokrageList = []) {
+async function updateBrokerage(brokerageList = []) {
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(today.getDate() - 1);
@@ -108,20 +108,20 @@ async function updateBrokrage(brokrageList = []) {
     throw new ErrorClass("Today is Weekend !", 400);
   }
   return Promise.all(
-    brokrageList.map(async (brokrage) => {
-      if (brokrage?.email && brokrage?.mobile) {
-        await Brokrage.findOneAndUpdate(
+    brokerageList.map(async (brokerage) => {
+      if (brokerage?.email && brokerage?.mobile) {
+        await Brokerage.findOneAndUpdate(
           {
-            email: brokrage?.email,
-            mobile: brokrage?.mobile,
-            "brokrage.date": { $ne: yesterday.toDateString() },
+            email: brokerage?.email,
+            mobile: brokerage?.mobile,
+            "brokerage.date": { $ne: yesterday.toDateString() },
           },
           {
-            $set: { email: brokrage?.email, mobile: brokrage?.mobile },
+            $set: { email: brokerage?.email, mobile: brokerage?.mobile },
             $addToSet: {
-              brokrage: {
+              brokerage: {
                 date: yesterday.toDateString(),
-                amount: brokrage?.past / 2,
+                amount: brokerage?.past / 2,
                 status: AMOUNT_PAID.NOT_PAID,
               },
             },

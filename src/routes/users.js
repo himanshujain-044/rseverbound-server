@@ -2,9 +2,9 @@ const express = require("express");
 const {
   login,
   logout,
-  getUserBrokrageData,
-  updateUserBrokrage,
-  getPaidUserBrokrage,
+  getUserBrokerageData,
+  updateUserBrokerage,
+  getPaidUserBrokerage,
   updatePaymentMethod,
 } = require("../controllers/users");
 const { verifyAuthToken } = require("../middleware/auth");
@@ -12,18 +12,20 @@ const {
   updatePaymentMethodSchemaVal,
 } = require("../apiSchemaValidation/users");
 const { validateBody } = require("../middleware/joi");
-const { updateBrokrageSchemaVal } = require("../apiSchemaValidation/brokrage");
+const {
+  updateBrokerageSchemaVal,
+} = require("../apiSchemaValidation/brokerage");
 const usersRoutes = express.Router();
 usersRoutes.post("/login", login);
 usersRoutes.get("/logout", verifyAuthToken, logout);
-usersRoutes.get("/get-user-brokrage", verifyAuthToken, getUserBrokrageData);
+usersRoutes.get("/get-user-brokerage", verifyAuthToken, getUserBrokerageData);
 usersRoutes.patch(
-  "/update-user-brokrage",
+  "/update-user-brokerage",
   verifyAuthToken,
-  validateBody(updateBrokrageSchemaVal),
-  updateUserBrokrage
+  validateBody(updateBrokerageSchemaVal),
+  updateUserBrokerage
 );
-usersRoutes.get("/paid-user-brokrage", verifyAuthToken, getPaidUserBrokrage);
+usersRoutes.get("/paid-user-brokerage", verifyAuthToken, getPaidUserBrokerage);
 usersRoutes.patch(
   "/update-payment-method",
   verifyAuthToken,

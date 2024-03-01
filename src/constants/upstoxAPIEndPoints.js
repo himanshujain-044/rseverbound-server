@@ -1,6 +1,6 @@
 module.exports = {
   getAllCustomers:
     "https://service.upstox.com/partner-dashboard/api/v1/customers",
-  getCustomersBrokrage:
+  getCustomersBrokerage:
     "https://service.upstox.com/partner-dashboard/api/v1/ledger/report/referralEarningsReport",
 };

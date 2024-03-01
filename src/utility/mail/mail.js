@@ -22,7 +22,7 @@ module.exports.sendEmail = async ({
       subject,
       html,
     };
-    mailOptions.from = `Brokrage Sharing Under Himanshu <${process.env.MAIL_ACCOUNT_USER}>`;
+    mailOptions.from = `Brokerage Sharing Under Himanshu <${process.env.MAIL_ACCOUNT_USER}>`;
     const res = await transporter.sendMail(mailOptions);
     return res;
   } catch (err) {

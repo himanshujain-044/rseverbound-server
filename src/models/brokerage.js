@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { AMOUNT_PAID } = require("../constants/enum");
 
-const brokrageSchema = new mongoose.Schema({
+const brokerageSchema = new mongoose.Schema({
   date: { type: String, required: true },
   amount: { type: Number, required: true },
   status: {
@@ -10,7 +10,7 @@ const brokrageSchema = new mongoose.Schema({
     enum: [AMOUNT_PAID.PAID, AMOUNT_PAID.NOT_PAID],
   },
 });
-const BrokrageSchema = new mongoose.Schema(
+const BrokerageSchema = new mongoose.Schema(
   {
     email: {
       type: String,
@@ -23,7 +23,7 @@ const BrokrageSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    brokrage: [brokrageSchema],
+    brokerage: [brokerageSchema],
   },
   {
     timestamps: true,
@@ -31,6 +31,6 @@ const BrokrageSchema = new mongoose.Schema(
   }
 );
 
-const Brokrage = mongoose.model("brokrage", BrokrageSchema);
+const Brokerage = mongoose.model("brokerage", BrokerageSchema);
 
-module.exports = Brokrage;
+module.exports = Brokerage;

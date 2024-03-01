@@ -25,7 +25,7 @@ app.use("/api/upstox", upstoxRoutes);
 app.use("/api/users", usersRoutes);
 // Define a route handler
 app.get("/api", (req, res) => {
-  res.send("Welcome to Brokrage Sharing backend server!!!");
+  res.send("Welcome to Brokerage Sharing backend server!!!");
 });
 
 // Handling all other routes with a 404 error

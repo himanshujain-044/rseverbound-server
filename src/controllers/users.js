@@ -1,6 +1,6 @@
 const { AMOUNT_PAID } = require("../constants/enum");
 const { signToken } = require("../middleware/auth");
-const Brokrage = require("../models/brokrage");
+const Brokerage = require("../models/brokerage");
 const Users = require("../models/users");
 const { decryptPassword } = require("../utility/common");
 const ErrorClass = require("../utility/error");
@@ -20,7 +20,7 @@ module.exports = {
       const deUserPassword = decryptPassword(password);
       const deStoredPassword = decryptPassword(isUserExits.password);
       if (deUserPassword !== deStoredPassword) {
-        throw new ErrorClass("Incorrect Credentials !", 401);
+        throw new ErrorClass("Incorrect Credentials !", 400);
       }
       const userDetails = {
         email: isUserExits.email,
@@ -58,57 +58,57 @@ module.exports = {
       next(err);
     }
   },
-  getUserBrokrageData: async (req, res, next) => {
+  getUserBrokerageData: async (req, res, next) => {
     try {
       const { email, mobile } = req?.user;
-      const userBrokrage = await Brokrage.findOne(
+      const userBrokerage = await Brokerage.findOne(
         { email, mobile },
-        { "brokrage._id": 0 }
+        { "brokerage._id": 0 }
       ).select("-_id -__v -createdAt -updatedAt");
       res.status(200).send({
         code: 200,
-        message: "User's brokrage fetched successfully !",
-        data: userBrokrage,
+        message: "User's brokerage fetched successfully !",
+        data: userBrokerage,
       });
     } catch (err) {
       console.error(err);
       next(err);
     }
   },
-  updateUserBrokrage: async (req, res, next) => {
+  updateUserBrokerage: async (req, res, next) => {
     try {
       const { email, mobile, paymentMethod, name } = req?.user;
       if (!paymentMethod?.method || !paymentMethod?.paymentAddress) {
         throw new ErrorClass("Select the payment method", 400);
       }
       const { dates } = req?.body;
-      const { brokrage } = await Brokrage.findOne(
+      const { brokerage } = await Brokerage.findOne(
         {
           email,
           mobile,
         },
-        { "brokrage._id": 0 }
+        { "brokerage._id": 0 }
       );
 
-      if (!brokrage?.length) {
-        throw new ErrorClass("No brokrage available !");
+      if (!brokerage?.length) {
+        throw new ErrorClass("No brokerage available !");
       }
       let totalAmountToPaid = 0;
-      const updatedBrokrageArr = brokrage.map((brokrageData) => {
-        const isDateExits = dates.find((date) => date === brokrageData?.date);
-        if (isDateExits && brokrageData?.status !== AMOUNT_PAID.NOT_PAID) {
+      const updatedBrokerageArr = brokerage.map((brokerageData) => {
+        const isDateExits = dates.find((date) => date === brokerageData?.date);
+        if (isDateExits && brokerageData?.status !== AMOUNT_PAID.NOT_PAID) {
           throw new ErrorClass(
             "Please send the unpaid amount dates only !",
             400
           );
         }
-        if (isDateExits && brokrageData?.status === AMOUNT_PAID.NOT_PAID) {
-          const brokrage = brokrageData;
-          brokrage["status"] = AMOUNT_PAID.PAID;
-          totalAmountToPaid += brokrage["amount"];
-          return brokrage;
+        if (isDateExits && brokerageData?.status === AMOUNT_PAID.NOT_PAID) {
+          const brokerage = brokerageData;
+          brokerage["status"] = AMOUNT_PAID.PAID;
+          totalAmountToPaid += brokerage["amount"];
+          return brokerage;
         } else {
-          return brokrageData;
+          return brokerageData;
         }
       });
       if (totalAmountToPaid < 50) {
@@ -117,9 +117,9 @@ module.exports = {
           400
         );
       }
-      await Brokrage.findOneAndUpdate(
+      await Brokerage.findOneAndUpdate(
         { email, mobile },
-        { $set: { brokrage: updatedBrokrageArr } },
+        { $set: { brokerage: updatedBrokerageArr } },
         { new: true }
       );
       await sendEmail({
@@ -135,27 +135,27 @@ module.exports = {
       });
       res.status(200).send({
         code: 200,
-        message: "User's brokrage updated successfully !",
-        data: updatedBrokrageArr,
+        message: "User's brokerage updated successfully !",
+        data: updatedBrokerageArr,
       });
     } catch (err) {
       console.error(err);
       next(err);
     }
   },
-  getPaidUserBrokrage: async (req, res, next) => {
+  getPaidUserBrokerage: async (req, res, next) => {
     try {
       const { email, mobile } = req?.user;
-      const brokrage = await Brokrage.aggregate([
+      const brokerage = await Brokerage.aggregate([
         { $match: { email, mobile } }, // Match the user document
-        { $unwind: "$brokrage" }, // Unwind the brokrage array
-        { $match: { "brokrage.status": "paid" } }, // Filter brokrage array to only include entries with status "paid"
+        { $unwind: "$brokerage" }, // Unwind the brokerage array
+        { $match: { "brokerage.status": "paid" } }, // Filter brokerage array to only include entries with status "paid"
         {
           $group: {
             _id: "$_id",
             email: { $first: "$email" },
             mobile: { $first: "$mobile" },
-            brokrage: { $push: "$brokrage" }, // Group back the filtered brokrage entries
+            brokerage: { $push: "$brokerage" }, // Group back the filtered brokerage entries
           },
         },
         { $project: { _id: 0 } }, // Exclude _id field
@@ -163,8 +163,8 @@ module.exports = {
 
       res.status(200).send({
         code: 200,
-        message: "User's paid brokrage fetched successfully !",
-        data: brokrage,
+        message: "User's paid brokerage fetched successfully !",
+        data: brokerage,
       });
     } catch (err) {
       console.error(err);
