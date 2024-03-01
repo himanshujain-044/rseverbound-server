@@ -5,7 +5,11 @@ const paymentMethod = new mongoose.Schema({
     type: String,
     required: true,
     enum: {
-      values: [PAYMENT_METHOD.GPAY, PAYMENT_METHOD.PHONE_PAY],
+      values: [
+        PAYMENT_METHOD.GPAY,
+        PAYMENT_METHOD.PHONEPE,
+        PAYMENT_METHOD.PAYTM,
+      ],
       message: "Invalid method !",
     },
   },

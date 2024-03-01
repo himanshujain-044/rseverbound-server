@@ -5,6 +5,7 @@ module.exports = {
   },
   PAYMENT_METHOD: {
     GPAY: "gpay",
-    PHONE_PAY: "phone_pay",
+    PHONEPE: "phonepe",
+    PAYTM: "paytm",
   },
 };
