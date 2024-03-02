@@ -61,14 +61,42 @@ module.exports = {
   getUserBrokerageData: async (req, res, next) => {
     try {
       const { email, mobile } = req?.user;
-      const userBrokerage = await Brokerage.findOne(
-        { email, mobile },
-        { "brokerage._id": 0 }
-      ).select("-_id -__v -createdAt -updatedAt");
+      const userBrokerage = await Brokerage.aggregate([
+        { $match: { email, mobile } }, // Match the user document
+        { $unwind: "$brokerage" }, // Unwind the brokerage array
+        { $match: { "brokerage.status": "not_paid" } }, // Filter brokerage array to only include entries with status "paid"
+        {
+          $group: {
+            _id: "$_id",
+            email: { $first: "$email" },
+            mobile: { $first: "$mobile" },
+            brokerage: { $push: "$brokerage" }, // Group back the filtered brokerage entries
+          },
+        },
+        {
+          $project: {
+            email: 1,
+            mobile: 1,
+            _id: 0,
+            brokerage: {
+              $map: {
+                input: "$brokerage",
+                as: "brokerageItem",
+                in: {
+                  date: "$$brokerageItem.date",
+                  amount: "$$brokerageItem.amount",
+                  status: "$$brokerageItem.status",
+                  id: "$$brokerageItem._id",
+                },
+              },
+            },
+          },
+        },
+      ]);
       res.status(200).send({
         code: 200,
         message: "User's brokerage fetched successfully !",
-        data: userBrokerage,
+        data: userBrokerage[0]?.brokerage || [],
       });
     } catch (err) {
       console.error(err);
@@ -158,13 +186,31 @@ module.exports = {
             brokerage: { $push: "$brokerage" }, // Group back the filtered brokerage entries
           },
         },
-        { $project: { _id: 0 } }, // Exclude _id field
+        {
+          $project: {
+            email: 1,
+            mobile: 1,
+            _id: 0,
+            brokerage: {
+              $map: {
+                input: "$brokerage",
+                as: "brokerageItem",
+                in: {
+                  date: "$$brokerageItem.date",
+                  amount: "$$brokerageItem.amount",
+                  status: "$$brokerageItem.status",
+                  id: "$$brokerageItem._id",
+                },
+              },
+            },
+          },
+        },
       ]);
 
       res.status(200).send({
         code: 200,
         message: "User's paid brokerage fetched successfully !",
-        data: brokerage,
+        data: brokerage[0]?.brokerage || [],
       });
     } catch (err) {
       console.error(err);
@@ -179,6 +225,7 @@ module.exports = {
       res.status(201).send({
         code: 201,
         message: "Payment method updated successfully !",
+        data: paymentMethod,
       });
     } catch (err) {
       console.error(err);

@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { STATUS, ERROR_MSG } = require("../constants/messages");
 const Users = require("../models/users");
+const ErrorClass = require("../utility/error");
 
 module.exports.verifyAuthToken = async (req, res, next) => {
   if (!req.headers.authorization) {
@@ -16,7 +17,7 @@ module.exports.verifyAuthToken = async (req, res, next) => {
         email: decoded.email,
         token,
       });
-      if (!user) throw new Error(ERROR_MSG.noUserFound);
+      if (!user) throw new ErrorClass(ERROR_MSG.noUserFound, 401);
       req.user = user;
       req.token = token;
       next();
@@ -28,9 +29,11 @@ module.exports.verifyAuthToken = async (req, res, next) => {
           status: STATUS.unauth,
         });
       else
-        res
-          .status(STATUS.unauth)
-          .send({ error: err.message, status: STATUS.unauth });
+        res.status(STATUS.unauth).send({
+          error: err.message,
+          message: err.message,
+          status: STATUS.unauth,
+        });
     }
   }
 };
