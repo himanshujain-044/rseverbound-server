@@ -1,7 +1,7 @@
 module.exports = {
   AMOUNT_PAID: {
-    PAID: "paid",
-    NOT_PAID: "not_paid",
+    PAID: "Paid",
+    NOT_PAID: "Not Paid",
   },
   PAYMENT_METHOD: {
     GPAY: "gpay",

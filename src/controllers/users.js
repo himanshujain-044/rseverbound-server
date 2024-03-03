@@ -64,7 +64,7 @@ module.exports = {
       const userBrokerage = await Brokerage.aggregate([
         { $match: { email, mobile } }, // Match the user document
         { $unwind: "$brokerage" }, // Unwind the brokerage array
-        { $match: { "brokerage.status": "not_paid" } }, // Filter brokerage array to only include entries with status "paid"
+        { $match: { "brokerage.status": AMOUNT_PAID.NOT_PAID } }, // Filter brokerage array to only include entries with status "paid"
         {
           $group: {
             _id: "$_id",
@@ -177,7 +177,7 @@ module.exports = {
       const brokerage = await Brokerage.aggregate([
         { $match: { email, mobile } }, // Match the user document
         { $unwind: "$brokerage" }, // Unwind the brokerage array
-        { $match: { "brokerage.status": "paid" } }, // Filter brokerage array to only include entries with status "paid"
+        { $match: { "brokerage.status": AMOUNT_PAID.PAID } }, // Filter brokerage array to only include entries with status "paid"
         {
           $group: {
             _id: "$_id",
