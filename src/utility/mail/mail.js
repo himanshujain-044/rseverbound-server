@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const ErrorClass = require("../error");
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
