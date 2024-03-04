@@ -56,13 +56,7 @@ module.exports = {
             password: encryptPassword(user?.ucc),
           };
         });
-      await sendWelcomeEmail(
-        //results
-        [
-          { name: "himasnhu", email: "himanshujain044@gmail.com" },
-          { name: "madhuvan", email: "madhuvandigitalstech@gmail.com" },
-        ]
-      );
+      await sendWelcomeEmail(results);
       await Users.insertMany(results);
       res
         .status(200)
@@ -102,9 +96,7 @@ module.exports = {
 };
 async function updateBrokerage(brokerageList = []) {
   const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-  if ([0, 6].includes(yesterday.getDay())) {
+  if ([0, 6].includes(today.getDay())) {
     throw new ErrorClass("Today is Weekend !", 400);
   }
   return Promise.all(
@@ -114,14 +106,14 @@ async function updateBrokerage(brokerageList = []) {
           {
             email: brokerage?.email,
             mobile: brokerage?.mobile,
-            "brokerage.date": { $ne: yesterday.toDateString() },
+            "brokerage.date": { $ne: today.toDateString() },
           },
           {
             $set: { email: brokerage?.email, mobile: brokerage?.mobile },
             $addToSet: {
               brokerage: {
-                date: yesterday.toDateString(),
-                amount: brokerage?.past / 2,
+                date: today.toDateString(),
+                amount: brokerage?.present / 2,
                 status: AMOUNT_PAID.NOT_PAID,
               },
             },

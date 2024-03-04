@@ -151,7 +151,7 @@ module.exports = {
         { new: true }
       );
       await sendEmail({
-        to: [process.env.REQEST_PAYOUT_EMAIL, "himanshujain044@gmail.com"],
+        to: [process.env.REQEST_PAYOUT_EMAIL, email],
         subject: "Requested for pay-out",
         html: customerPayoutRequest({
           name,
