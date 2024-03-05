@@ -65,6 +65,7 @@ module.exports = {
         { $match: { email, mobile } }, // Match the user document
         { $unwind: "$brokerage" }, // Unwind the brokerage array
         { $match: { "brokerage.status": AMOUNT_PAID.NOT_PAID } }, // Filter brokerage array to only include entries with status "paid"
+        { $sort: { "brokerage.date": -1 } },
         {
           $group: {
             _id: "$_id",
@@ -178,6 +179,7 @@ module.exports = {
         { $match: { email, mobile } }, // Match the user document
         { $unwind: "$brokerage" }, // Unwind the brokerage array
         { $match: { "brokerage.status": AMOUNT_PAID.PAID } }, // Filter brokerage array to only include entries with status "paid"
+        { $sort: { "brokerage.date": -1 } },
         {
           $group: {
             _id: "$_id",
