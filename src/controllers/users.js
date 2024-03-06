@@ -5,7 +5,10 @@ const Users = require("../models/users");
 const { decryptPassword } = require("../utility/common");
 const ErrorClass = require("../utility/error");
 const { sendEmail, getAttachments } = require("../utility/mail/mail");
-const { customerPayoutRequest } = require("../utility/mail/mailTemplates");
+const {
+  customerPayoutRequest,
+  welcomeMail,
+} = require("../utility/mail/mailTemplates");
 
 module.exports = {
   login: async (req, res, next) => {
@@ -106,7 +109,7 @@ module.exports = {
   },
   updateUserBrokerage: async (req, res, next) => {
     try {
-      const { email, mobile, paymentMethod, name } = req?.user;
+      const { email, mobile, paymentMethod, name, ucc } = req?.user;
       if (!paymentMethod?.method || !paymentMethod?.paymentAddress) {
         throw new ErrorClass("Select the payment method", 400);
       }
@@ -147,22 +150,25 @@ module.exports = {
         );
       }
       await sendEmail({
-        to: [process.env.REQEST_PAYOUT_EMAIL], //email
+        to: [process.env.REQEST_PAYOUT_EMAIL, email], //todo: Promise all
         subject: "Requested for pay-out",
         html: customerPayoutRequest({
           name,
+          email,
           totalAmountToPaid,
           dates,
           paymentMethod,
         }),
-        attachments: getAttachments(["logo", "welcomeHero"]),
+        attachments: getAttachments(["logo"]),
         isMultipleReceiver: true,
       });
-      // await Brokerage.findOneAndUpdate(
-      //   { email, mobile },
-      //   { $set: { brokerage: updatedBrokerageArr } },
-      //   { new: true }
-      // );
+
+      await Brokerage.findOneAndUpdate(
+        //todo: Promise all
+        { email, mobile },
+        { $set: { brokerage: updatedBrokerageArr } },
+        { new: true }
+      );
 
       res.status(200).send({
         code: 200,

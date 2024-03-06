@@ -34,7 +34,8 @@ module.exports.sendEmail = async ({
 };
 
 module.exports.getAttachments = (attachmentsKeys = []) => {
-  const d = attachmentsKeys.map((attachmentKey) => attachments[attachmentKey]);
-  console.log("38", d);
-  return d;
+  const filteredAttachments = attachmentsKeys.map(
+    (attachmentKey) => attachments[attachmentKey]
+  );
+  return filteredAttachments;
 };

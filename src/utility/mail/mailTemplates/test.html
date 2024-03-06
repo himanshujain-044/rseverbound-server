@@ -12,43 +12,44 @@
         border-radius: 4px;
       }
       .logo {
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        margin: 1rem 0rem;
-        width: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* width: 100%; */
+        /* background-color: #ffffff; */
+        margin-top: 1rem;
+        margin-bottom: 3rem;
       }
       .hero {
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         background-color: #3d2267;
+        /* width: 80%; */
+        /* background-color: #ffffff; */
         padding: 4rem 2rem;
       }
       .content {
         padding: 0.7rem;
+        /* margin-top: 6rem; */
         background-color: #f6ebff;
       }
       .name {
         color: #5a298b;
         font-size: 24px;
       }
-      @media only screen and (max-width: 600px) {
-        .logo {
-          width: 100%;
-        }
-      }
     </style>
   </head>
   <body>
     <div class="logo">
-      <img width="100%" src="cid:logo.ee" />
+      <img width="50%" src="cid:logo.ee" />
     </div>
     <div class="hero">
       <img width="90%" src="cid:welcome-hero-img.ee" />
     </div>
+    <br />
     <div class="content">
-      <strong class="name">Welcome <%= name %>,</strong>
+      <strong class="name">Hey and Welcome <%= name %>,</strong>
       <p>
         I hope this email finds you well. We are thrilled to have you as a
         valued member of our community, and we're excited to inform you about an

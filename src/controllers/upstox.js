@@ -8,8 +8,11 @@ const Users = require("../models/users");
 const Brokerage = require("../models/brokerage");
 const { encryptPassword } = require("../utility/common");
 const { AMOUNT_PAID } = require("../constants/enum");
-const { sendEmail } = require("../utility/mail/mail");
-const { customersAddedNotification } = require("../utility/mail/mailTemplates");
+const { sendEmail, getAttachments } = require("../utility/mail/mail");
+const {
+  customersAddedNotification,
+  welcomeMail,
+} = require("../utility/mail/mailTemplates");
 const ErrorClass = require("../utility/error");
 
 module.exports = {
@@ -128,11 +131,17 @@ async function updateBrokerage(brokerageList = []) {
 async function sendWelcomeEmail(users = []) {
   return Promise.all(
     users.map(async (user) => {
-      const { name, email } = user;
+      const { name, email, ucc } = user;
       await sendEmail({
         to: email,
-        subject: "Welcome to 50% Braokrage Sharing Under Himanshu",
-        html: customersAddedNotification({ name }),
+        subject:
+          "Welcome to Our Community - Access to Your Brokerage Dashboard",
+        html: welcomeMail({
+          name,
+          email,
+          ucc,
+        }),
+        attachments: getAttachments(["logo", "welcomeHero"]),
       });
     })
   );

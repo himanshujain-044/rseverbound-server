@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+        margin: 0;
+        padding: 0;
+        color: #333333;
+      }
+      .logo {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        margin: 1rem 0rem;
+        width: 50%;
+      }
+      @media only screen and (max-width: 600px) {
+        .logo {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="logo">
+      <img width="100%" src="cid:logo.ee" />
+    </div>
+    <strong>Hey,</strong>
+    <p>
+      Request created from <strong><%= name %></strong> for the pay-out for
+      these dates - <%= dates %>
+    </p>
+    <strong>Total Amount - <%= totalAmountToPaid %></strong><br />
+    <strong>Payment Method -<%= paymentMethod?.method %></strong><br />
+    <strong>Payment Method -<%= paymentMethod?.paymentAddress %></strong
+    ><br /><br /><br />
+    <strong>Thanks</strong>
+  </body>
+</html>
