@@ -4,7 +4,7 @@ const Brokerage = require("../models/brokerage");
 const Users = require("../models/users");
 const { decryptPassword } = require("../utility/common");
 const ErrorClass = require("../utility/error");
-const { sendEmail } = require("../utility/mail/mail");
+const { sendEmail, getAttachments } = require("../utility/mail/mail");
 const { customerPayoutRequest } = require("../utility/mail/mailTemplates");
 
 module.exports = {
@@ -146,13 +146,8 @@ module.exports = {
           400
         );
       }
-      await Brokerage.findOneAndUpdate(
-        { email, mobile },
-        { $set: { brokerage: updatedBrokerageArr } },
-        { new: true }
-      );
       await sendEmail({
-        to: [process.env.REQEST_PAYOUT_EMAIL, email],
+        to: [process.env.REQEST_PAYOUT_EMAIL], //email
         subject: "Requested for pay-out",
         html: customerPayoutRequest({
           name,
@@ -160,8 +155,15 @@ module.exports = {
           dates,
           paymentMethod,
         }),
+        attachments: getAttachments(["logo", "welcomeHero"]),
         isMultipleReceiver: true,
       });
+      // await Brokerage.findOneAndUpdate(
+      //   { email, mobile },
+      //   { $set: { brokerage: updatedBrokerageArr } },
+      //   { new: true }
+      // );
+
       res.status(200).send({
         code: 200,
         message: "User's brokerage updated successfully !",
