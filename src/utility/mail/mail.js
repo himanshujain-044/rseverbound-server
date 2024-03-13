@@ -25,7 +25,7 @@ module.exports.sendEmail = async ({
       html,
       attachments,
     };
-    mailOptions.from = `Brokerage Sharing Under Himanshu <${process.env.MAIL_ACCOUNT_USER}>`;
+    mailOptions.from = `50% Brokerage Sharing <${process.env.MAIL_ACCOUNT_USER}>`;
     const res = await transporter.sendMail(mailOptions);
     return res;
   } catch (err) {

@@ -33,7 +33,8 @@
         color: #5a298b;
         font-size: 24px;
       }
-      .demat-account-link {
+      .demat-account-link,
+      .dashboard-link {
         text-decoration: none;
         color: #5a298b;
         border: 1px solid #5a298b;
@@ -43,7 +44,8 @@
         border-radius: 4px;
         margin-top: 8px;
       }
-      .demat-account-link:hover {
+      .demat-account-link:hover,
+      .dashboard-link:hover {
         color: purple;
       }
 
@@ -56,18 +58,10 @@
   </head>
   <body>
     <div class="logo">
-      <!-- <img width="100%" src="cid:logo.ee" /> -->
-      <img
-        width="100%"
-        src="C:\Users\himan\OneDrive\Desktop\HimanshuWorkSpace\React\Brokerage Sharing\server\src\utility\mail\mailAssets\logo.png"
-      />
+      <img width="100%" src="cid:logo.ee" />
     </div>
     <div class="hero">
-      <!-- <img width="90%" src="cid:welcome-hero-img.ee" /> -->
-      <img
-        width="90%"
-        src="C:\Users\himan\OneDrive\Desktop\HimanshuWorkSpace\React\Brokerage Sharing\server\src\utility\mail\mailAssets\welcome-hero-img.png"
-      />
+      <img width="90%" src="cid:welcome-hero-img.ee" />
     </div>
     <div class="content">
       <strong class="name">Hello,</strong>
@@ -94,10 +88,11 @@
         href="https://upstox.com/open-account/?f=JD1505"
         >Open Your Demat Account Now</a
       >
+      <br /><br />
       <p>
-        To visit our website to see your dashboard:
-        <a href="https://brokrag-sharing-ui.vercel.app/"
-          >Click here to visit dashobard/</a
+        To visit our website to see your dashboard:<br /><br />
+        <a class="dashboard-link" href="https://brokrag-sharing-ui.vercel.app/"
+          >Click here to visit dashobard</a
         >
       </p>
       <br />

@@ -12,6 +12,7 @@ const { sendEmail, getAttachments } = require("../utility/mail/mail");
 const {
   customersAddedNotification,
   welcomeMail,
+  openDematAccount,
 } = require("../utility/mail/mailTemplates");
 const ErrorClass = require("../utility/error");
 
@@ -91,6 +92,27 @@ module.exports = {
       res
         .status(201)
         .send({ code: 201, message: "Brokerage fetched successfully !" });
+    } catch (err) {
+      console.error(err?.response);
+      next(err?.response?.data?.error || err);
+    }
+  },
+  sendOpenDematAccMail: async (req, res, next) => {
+    try {
+      const { emails } = req?.body;
+      await Promise.all(
+        emails.map(async (email) => {
+          await sendEmail({
+            to: email,
+            subject: "Unlock Your Potential: Open Your Demat Account Today!",
+            html: openDematAccount(),
+            attachments: getAttachments(["logo", "welcomeHero"]),
+          });
+        })
+      );
+      res
+        .status(201)
+        .send({ code: 201, message: "Mail delivered to all the users !" });
     } catch (err) {
       console.error(err?.response);
       next(err?.response?.data?.error || err);
