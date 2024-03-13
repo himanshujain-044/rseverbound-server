@@ -67,8 +67,13 @@ module.exports = {
       const userBrokerage = await Brokerage.aggregate([
         { $match: { email, mobile } }, // Match the user document
         { $unwind: "$brokerage" }, // Unwind the brokerage array
-        { $match: { "brokerage.status": AMOUNT_PAID.NOT_PAID } }, // Filter brokerage array to only include entries with status "paid"
-        { $sort: { "brokerage.date": -1 } },
+        { $match: { "brokerage.status": AMOUNT_PAID.NOT_PAID } }, // Filter brokerage array to only include entries with status "Not Paid"
+        {
+          $addFields: {
+            "brokerage.convertedToDateObj": { $toDate: "$brokerage.date" },
+          },
+        }, // Convert date strings to Date objects
+        { $sort: { "brokerage.convertedToDateObj": -1 } }, // Sort by date in descending order
         {
           $group: {
             _id: "$_id",
@@ -78,10 +83,7 @@ module.exports = {
           },
         },
         {
-          $project: {
-            email: 1,
-            mobile: 1,
-            _id: 0,
+          $addFields: {
             brokerage: {
               $map: {
                 input: "$brokerage",
@@ -97,6 +99,7 @@ module.exports = {
           },
         },
       ]);
+
       res.status(200).send({
         code: 200,
         message: "User's brokerage fetched successfully !",
@@ -164,7 +167,7 @@ module.exports = {
       });
 
       await Brokerage.findOneAndUpdate(
-        //todo: Promise all
+        // todo: Promise all
         { email, mobile },
         { $set: { brokerage: updatedBrokerageArr } },
         { new: true }
@@ -187,7 +190,12 @@ module.exports = {
         { $match: { email, mobile } }, // Match the user document
         { $unwind: "$brokerage" }, // Unwind the brokerage array
         { $match: { "brokerage.status": AMOUNT_PAID.PAID } }, // Filter brokerage array to only include entries with status "paid"
-        { $sort: { "brokerage.date": -1 } },
+        {
+          $addFields: {
+            "brokerage.convertedToDateObj": { $toDate: "$brokerage.date" },
+          },
+        }, // Convert date strings to Date objects
+        { $sort: { "brokerage.convertedToDateObj": -1 } }, // Sort by date in descending order
         {
           $group: {
             _id: "$_id",
