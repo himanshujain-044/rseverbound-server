@@ -9,4 +9,9 @@ module.exports.attachments = {
     path: __dirname + "/mailAssets/welcome-hero-img.png",
     cid: "welcome-hero-img.ee",
   },
+  upstoxLogo: {
+    filename: "upstox-logo.png",
+    path: __dirname + "/mailAssets/upstox-logo.png",
+    cid: "upstox-logo.ee",
+  },
 };
