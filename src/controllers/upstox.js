@@ -6,7 +6,7 @@ const {
 } = require("../constants/upstoxAPIEndPoints");
 const Users = require("../models/users");
 const Brokerage = require("../models/brokerage");
-const { encryptPassword } = require("../utility/common");
+const { encryptPassword, chunkArray } = require("../utility/common");
 const { AMOUNT_PAID } = require("../constants/enum");
 const { sendEmail, getAttachments } = require("../utility/mail/mail");
 const {
@@ -100,13 +100,15 @@ module.exports = {
   sendOpenDematAccMail: async (req, res, next) => {
     try {
       const { emails } = req?.body;
+      const chunkedMailsArr = chunkArray(emails, 20);
       await Promise.all(
-        emails.map(async (email) => {
+        chunkedMailsArr.map(async (emailsArr) => {
           await sendEmail({
-            to: email,
+            to: emailsArr,
             subject: "Unlock Your Potential: Open Your Demat Account Today!",
             html: openDematAccount(),
-            attachments: getAttachments(["logo", "welcomeHero"]),
+            attachments: getAttachments(["logo", "welcomeHero", "upstoxLogo"]),
+            isMultipleReceiver: true,
           });
         })
       );

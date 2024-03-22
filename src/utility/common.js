@@ -7,3 +7,11 @@ module.exports.decryptPassword = (password = "") => {
 module.exports.encryptPassword = (password = "") => {
   return AES.encrypt(password, process.env.ENCRYPTED_SECRET).toString();
 };
+
+module.exports.chunkArray = (array, chunkSize) => {
+  const chunkedArray = [];
+  while (array.length) {
+    chunkedArray.push(array.splice(0, chunkSize));
+  }
+  return chunkedArray;
+};

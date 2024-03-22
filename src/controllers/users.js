@@ -147,10 +147,7 @@ module.exports = {
         }
       });
       if (totalAmountToPaid < 50) {
-        throw new ErrorClass(
-          "Total paying amount is less then 50, try it later",
-          400
-        );
+        throw new ErrorClass("Total amount is less then Rs. 50", 400);
       }
       await sendEmail({
         to: [process.env.REQEST_PAYOUT_EMAIL, email], //todo: Promise all
