@@ -15,6 +15,7 @@ const {
   openDematAccount,
 } = require("../utility/mail/mailTemplates");
 const ErrorClass = require("../utility/error");
+const SavedRandomUsers = require("../models/savedRandomUsers");
 
 module.exports = {
   getAllCustomers: async (req, res, next) => {
@@ -102,19 +103,47 @@ module.exports = {
       const { emails } = req?.body;
       const chunkedMailsArr = chunkArray(emails, 20);
       await Promise.all(
-        chunkedMailsArr.map(async (emailsArr) => {
-          await sendEmail({
-            to: emailsArr,
-            subject: "Unlock Your Potential: Open Your Demat Account Today!",
-            html: openDematAccount(),
-            attachments: getAttachments(["logo", "welcomeHero", "upstoxLogo"]),
-            isMultipleReceiver: true,
-          });
+        chunkedMailsArr.map(async (chunk) => {
+          await Promise.all(
+            chunk.map(async (data) => {
+              await sendEmail({
+                to: data,
+                subject:
+                  "Unlock Your Potential: Open Your Demat Account Today!",
+                html: openDematAccount(),
+                attachments: getAttachments([
+                  "logo",
+                  "welcomeHero",
+                  "upstoxLogo",
+                ]),
+              });
+            })
+          );
+          // await sendEmail({
+          //   to: emailsArr,
+          //   subject: "Unlock Your Potential: Open Your Demat Account Today!",
+          //   html: openDematAccount(),
+          //   attachments: getAttachments(["logo", "welcomeHero", "upstoxLogo"]),
+          //   isMultipleReceiver: true,
+          // });
         })
       );
       res
         .status(201)
         .send({ code: 201, message: "Mail delivered to all the users !" });
+    } catch (err) {
+      console.error(err?.response);
+      next(err?.response?.data?.error || err);
+    }
+  },
+  getAllSavedUsers: async (req, res, next) => {
+    try {
+      const results = await SavedRandomUsers.find().distinct("email");
+      res.status(200).send({
+        code: 200,
+        message: "Fetched all the users !",
+        data: results,
+      });
     } catch (err) {
       console.error(err?.response);
       next(err?.response?.data?.error || err);
