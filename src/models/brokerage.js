@@ -7,7 +7,7 @@ const brokerageSchema = new mongoose.Schema({
   status: {
     type: String,
     required: true,
-    enum: [AMOUNT_PAID.PAID, AMOUNT_PAID.NOT_PAID],
+    enum: [AMOUNT_PAID.PAID, AMOUNT_PAID.NOT_PAID, AMOUNT_PAID.PENDING],
   },
 });
 const BrokerageSchema = new mongoose.Schema(
