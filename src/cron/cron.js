@@ -3,11 +3,11 @@ const Brokerage = require("../models/brokerage");
 const { AMOUNT_PAID } = require("../constants/enum");
 
 // Schedule the cron job at 3 A.M daily
-// const cronMoringDailyTimer = "0 3 * * *";
-const cronMoringDailyTimer = "*/10 * * * *";
+const cronMoringDailyTimer = "0 3 * * *";
+// const cronMoringDailyTimer = "*/10 * * * *";
+
 cron.schedule(cronMoringDailyTimer, async () => {
   try {
-    console.log("gone");
     await Brokerage.updateMany(
       { "brokerage.status": AMOUNT_PAID.PENDING },
       { $set: { "brokerage.$[elem].status": AMOUNT_PAID.PAID } },
