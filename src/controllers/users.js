@@ -67,7 +67,14 @@ module.exports = {
       const userBrokerage = await Brokerage.aggregate([
         { $match: { email, mobile } }, // Match the user document
         { $unwind: "$brokerage" }, // Unwind the brokerage array
-        { $match: { "brokerage.status": AMOUNT_PAID.NOT_PAID } }, // Filter brokerage array to only include entries with status "Not Paid"
+        {
+          $match: {
+            $or: [
+              { "brokerage.status": AMOUNT_PAID.NOT_PAID },
+              { "brokerage.status": AMOUNT_PAID.PENDING },
+            ],
+          },
+        }, // Filter brokerage array to only include entries with status "Not Paid"
         {
           $addFields: {
             "brokerage.convertedToDateObj": { $toDate: "$brokerage.date" },
@@ -139,7 +146,7 @@ module.exports = {
         }
         if (isDateExits && brokerageData?.status === AMOUNT_PAID.NOT_PAID) {
           const brokerage = brokerageData;
-          brokerage["status"] = AMOUNT_PAID.PAID;
+          brokerage["status"] = AMOUNT_PAID.PENDING;
           totalAmountToPaid += brokerage["amount"];
           return brokerage;
         } else {

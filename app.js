@@ -3,6 +3,7 @@ const upstoxRoutes = require("./src/routes/upstox");
 const ErrorClass = require("./src/utility/error");
 const usersRoutes = require("./src/routes/users");
 const app = express();
+require("./src/cron/cron");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
