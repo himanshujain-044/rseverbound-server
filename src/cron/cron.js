@@ -3,8 +3,8 @@ const Brokerage = require("../models/brokerage");
 const { AMOUNT_PAID } = require("../constants/enum");
 
 // Schedule the cron job at 8 A.M daily
-const cronMoringDailyTimer = "0 0 10 * * *";
-// const cronMoringDailyTimer = "*/10 * * * *";
+// const cronMoringDailyTimer = "0 0 10 * * *";
+const cronMoringDailyTimer = "*/5 * * * *";
 
 cron.schedule(cronMoringDailyTimer, async () => {
   try {
