@@ -152,12 +152,14 @@ module.exports = {
 };
 async function updateBrokerage(brokerageList = []) {
   const today = new Date();
+  // const yesterday = new Date(today);
+  // yesterday.setDate(today.getDate() - 1);
   if ([0, 6].includes(today.getDay())) {
     throw new ErrorClass("Today is Weekend !", 400);
   }
   return Promise.all(
     brokerageList.map(async (brokerage) => {
-      if (brokerage?.email && brokerage?.mobile) {
+      if (brokerage?.email && brokerage?.mobile && brokerage?.present !== 0) {
         await Brokerage.findOneAndUpdate(
           {
             email: brokerage?.email,
