@@ -4,10 +4,10 @@ const moment = require("moment");
 const { AMOUNT_PAID } = require("../constants/enum");
 
 // Schedule the cron job at 3:30AM daily
-const cronStatusUpdateTimeExp = "30 16 * * *";
+const cronStatusUpdateTimeExp = "48 06 * * *";
 
 // Schedule the cron job at 4:30AM daily
-const cronRemoveBrokerageTimeExp = "30 17 * * *";
+const cronRemoveBrokerageTimeExp = "30 07 * * *";
 
 cron.schedule(cronStatusUpdateTimeExp, async () => {
   try {
