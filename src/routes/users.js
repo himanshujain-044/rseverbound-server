@@ -6,6 +6,7 @@ const {
   updateUserBrokerage,
   getPaidUserBrokerage,
   updatePaymentMethod,
+  userData,
 } = require("../controllers/users");
 const { verifyAuthToken } = require("../middleware/auth");
 const {
@@ -32,4 +33,6 @@ usersRoutes.patch(
   validateBody(updatePaymentMethodSchemaVal),
   updatePaymentMethod
 );
+usersRoutes.get("/userData", userData);
+
 module.exports = usersRoutes;

@@ -254,4 +254,7 @@ module.exports = {
       next(err);
     }
   },
+  userData: async (req, res, next) => {
+    console.log(res);
+  },
 };
