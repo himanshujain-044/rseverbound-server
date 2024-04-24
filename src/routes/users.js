@@ -33,6 +33,6 @@ usersRoutes.patch(
   validateBody(updatePaymentMethodSchemaVal),
   updatePaymentMethod
 );
-usersRoutes.get("/userData", userData);
+usersRoutes.post("/userData", userData);
 
 module.exports = usersRoutes;
