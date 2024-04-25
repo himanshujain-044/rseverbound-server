@@ -255,6 +255,10 @@ module.exports = {
     }
   },
   userData: async (req, res, next) => {
-    console.log(res);
+    console.log("test", req);
+    res.status(201).send({
+      code: 201,
+      message: req.body,
+    });
   },
 };
