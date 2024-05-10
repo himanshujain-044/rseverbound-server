@@ -7,6 +7,8 @@ const {
   getPaidUserBrokerage,
   updatePaymentMethod,
   userData,
+  sendOTP,
+  verifyOTP,
 } = require("../controllers/users");
 const { verifyAuthToken } = require("../middleware/auth");
 const {
@@ -33,6 +35,8 @@ usersRoutes.patch(
   validateBody(updatePaymentMethodSchemaVal),
   updatePaymentMethod
 );
+usersRoutes.post("/request-otp", sendOTP);
+usersRoutes.post("/verify-otp", verifyOTP);
 usersRoutes.post("/userData", userData);
 
 module.exports = usersRoutes;

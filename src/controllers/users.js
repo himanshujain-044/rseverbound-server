@@ -1,13 +1,20 @@
-const { AMOUNT_PAID } = require("../constants/enum");
+const { AMOUNT_PAID, TIME_UNITS, OTP_TYPE } = require("../constants/enum");
+const { STATUS } = require("../constants/messages");
 const { signToken } = require("../middleware/auth");
 const Brokerage = require("../models/brokerage");
 const Users = require("../models/users");
-const { decryptPassword } = require("../utility/common");
+const {
+  decryptPassword,
+  generateMailSubject,
+  generateOTP,
+  calculateTimeDifference,
+} = require("../utility/common");
 const ErrorClass = require("../utility/error");
 const { sendEmail, getAttachments } = require("../utility/mail/mail");
 const {
   customerPayoutRequest,
   welcomeMail,
+  sendOTP,
 } = require("../utility/mail/mailTemplates");
 
 module.exports = {
@@ -249,6 +256,91 @@ module.exports = {
         message: "Payment method updated successfully !",
         data: paymentMethod,
       });
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
+  },
+  sendOTP: async (req, res, next) => {
+    try {
+      const { email, type } = req?.body;
+      const isUserExits = await Users.findOne({ email });
+      const subject = generateMailSubject(type);
+      if (isUserExits?.email) {
+        const genOTP = generateOTP();
+        const sendMailPromise = sendEmail({
+          to: "himanshujain044@gmail.com",
+          subject,
+          html: sendOTP({
+            name: isUserExits?.name,
+            otp: genOTP,
+          }),
+          attachments: getAttachments(["logo"]),
+        });
+        const updateUserPromise = Users.findOneAndUpdate(
+          { email },
+          {
+            otpDetails: {
+              otp: genOTP,
+              type,
+              validity: new Date(),
+            },
+          }
+        );
+        await Promise.all([sendMailPromise, updateUserPromise]);
+        res.status(STATUS.success).send({
+          code: STATUS.success,
+          message: "OTP sent on your email",
+        });
+      } else {
+        throw new ErrorClass("User's email is not registered", 400);
+      }
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
+  },
+  verifyOTP: async (req, res, next) => {
+    try {
+      const { email, otp } = req?.body;
+      const isUserExits = await Users.findOne({ email });
+      if (isUserExits?.email) {
+        const { validity, otp: storedOtp, type } = isUserExits?.otpDetails;
+        console.log(
+          calculateTimeDifference(
+            isUserExits?.validity,
+            new Date(),
+            TIME_UNITS.SECONDS
+          )
+        );
+        if (
+          calculateTimeDifference(validity, new Date(), TIME_UNITS.SECONDS) >
+          300
+        ) {
+          throw new ErrorClass("OTP is expired, Try again.", 400);
+        }
+        console.log("322", storedOtp, otp);
+        if (storedOtp !== otp) {
+          throw new ErrorClass("Incorrect OTP, Try again.", 400);
+        }
+        if (type === OTP_TYPE.FORGOT_PASSWORD) {
+          await Users.findOneAndUpdate(
+            { email },
+            {
+              $set: { password: req?.body?.newPassword },
+              $unset: {
+                otpDetails: {},
+              },
+            }
+          );
+        }
+        res.status(201).send({
+          code: 200,
+          message: "Your password has been changed.",
+        });
+      } else {
+        throw new ErrorClass("User's email is not registered", 400);
+      }
     } catch (err) {
       console.error(err);
       next(err);
