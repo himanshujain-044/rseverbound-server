@@ -9,4 +9,10 @@ module.exports = {
     PHONEPE: "phonepe",
     PAYTM: "paytm",
   },
+  OTP_TYPE: {
+    FORGOT_PASSWORD: "forgotPassword",
+  },
+  TIME_UNITS: {
+    SECONDS: "seconds",
+  },
 };

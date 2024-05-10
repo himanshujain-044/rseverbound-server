@@ -28,4 +28,18 @@ const openDematAccount = () => {
   return html;
 };
 
-module.exports = { welcomeMail, customerPayoutRequest, openDematAccount };
+const sendOTP = (data = {}) => {
+  const templateString = fs.readFileSync(
+    __dirname + "/mailTemplates/send-otp.ejs",
+    "utf-8"
+  );
+  const html = ejs.render(templateString, data);
+  return html;
+};
+
+module.exports = {
+  welcomeMail,
+  customerPayoutRequest,
+  openDematAccount,
+  sendOTP,
+};

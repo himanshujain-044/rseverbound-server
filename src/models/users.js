@@ -18,6 +18,14 @@ const paymentMethod = new mongoose.Schema({
     required: true,
   },
 });
+const otpDetails = new mongoose.Schema({
+  otp: {
+    type: String,
+    required: true,
+  },
+  type: { type: String, required: true },
+  validity: { type: String, required: true },
+});
 const UserSchema = new mongoose.Schema(
   {
     name: {
@@ -47,6 +55,7 @@ const UserSchema = new mongoose.Schema(
     token: {
       type: String,
     },
+    otpDetails: otpDetails,
   },
   {
     timestamps: true,
