@@ -40,7 +40,7 @@ app.use((err, req, res, next) => {
     err.code && [400, 401, 404].includes(err.code) ? err.code : 500;
   res.status(errorCode).send({
     message: err.message || "Internal Server Error. Something went wrong!",
-    status: errorCode,
+    code: errorCode,
   });
 });
 
