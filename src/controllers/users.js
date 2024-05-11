@@ -274,6 +274,7 @@ module.exports = {
           html: sendOTP({
             name: isUserExits?.name,
             otp: genOTP,
+            validity: "5 Mins",
           }),
           attachments: getAttachments(["logo"]),
         });
