@@ -30,13 +30,12 @@ cron.schedule(cronRemoveBrokerageTimeExp, async () => {
     const today = new Date();
     const last30thDay = new Date(today);
     last30thDay.setDate(today.getDate() - 30);
-    console.log(last30thDay.toDateString());
     const data = await Brokerage.updateMany(
       {},
       {
         $pull: {
           brokerage: {
-            date: last30thDay,
+            date: last30thDay.toDateString(),
             status: AMOUNT_PAID.NOT_PAID,
           },
         },
@@ -46,7 +45,7 @@ cron.schedule(cronRemoveBrokerageTimeExp, async () => {
     console.log(data);
     console.log(
       "Brokerage updated, removed a month ago brokerage successfully !",
-      new Date().toString()
+      today.toDateString()
     );
   } catch (error) {
     console.error("Error in cron job:", error);
