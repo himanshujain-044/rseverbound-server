@@ -269,7 +269,7 @@ module.exports = {
       if (isUserExits?.email) {
         const genOTP = generateOTP();
         const sendMailPromise = sendEmail({
-          to: "himanshujain044@gmail.com",
+          to: email,
           subject,
           html: sendOTP({
             name: isUserExits?.name,
