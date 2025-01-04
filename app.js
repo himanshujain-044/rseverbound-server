@@ -33,7 +33,7 @@ app.get("/api", (req, res) => {
 app.all("*", (req, res, next) => {
   next(new ErrorClass(`Requested URL ${req.path} not found!`, 404));
 });
-
+// structuredClone();
 // Error handling middleware
 app.use((err, req, res, next) => {
   const errorCode =
