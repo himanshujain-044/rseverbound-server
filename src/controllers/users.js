@@ -15,18 +15,21 @@ module.exports = {
       if (!isUserExits?.email) {
         throw new ErrorClass("User is not existed !", 400);
       }
-      const deUserPassword = decryptPassword(password);
-      const deStoredPassword = decryptPassword(isUserExits.password);
-      if (deUserPassword !== deStoredPassword) {
-        throw new ErrorClass("Incorrect Credentials !", 400);
-      }
+      console.log("decrpyt", decryptPassword(password));
+      // const deUserPassword = decryptPassword(password);
+      // const deStoredPassword = decryptPassword(isUserExits.password);
+      // if (deUserPassword !== deStoredPassword) {
+      //   throw new ErrorClass("Incorrect Credentials !", 400);
+      // }
       const userDetails = {
         email: isUserExits.email,
         name: isUserExits.name,
       };
 
       const token = signToken(userDetails);
+      console.log("aftrer token gene")
       await Users.findOneAndUpdate({ email: isUserExits.email }, { token });
+      console.log("aftrer user with token updated")
       res.status(201).send({
         code: 201,
         message: "User login successfully !",
