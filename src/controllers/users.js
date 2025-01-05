@@ -8,6 +8,7 @@ const ErrorClass = require("../utility/error");
 module.exports = {
   login: async (req, res, next) => {
     try {
+      console.log("login callled")
       const { email, password } = req.body;
       const isUserExits = await Users.findOne({
         email,
