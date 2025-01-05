@@ -3,6 +3,7 @@ const moment = require("moment");
 const { OTP_TYPE } = require("../constants/enum");
 
 module.exports.decryptPassword = (password = "") => {
+  console.log("decrpty func calls", AES);
   return AES.decrypt(password, process.env.ENCRYPTED_SECRET).toString(enc.Utf8);
 };
 
