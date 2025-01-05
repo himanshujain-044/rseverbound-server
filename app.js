@@ -1,9 +1,7 @@
 const express = require("express");
-const upstoxRoutes = require("./src/routes/upstox");
 const ErrorClass = require("./src/utility/error");
 const usersRoutes = require("./src/routes/users");
 const app = express();
-require("./src/cron/cron");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -22,11 +20,10 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/upstox", upstoxRoutes);
 app.use("/api/users", usersRoutes);
 // Define a route handler
 app.get("/api", (req, res) => {
-  res.send("Welcome to Brokerage Sharing backend server!!!");
+  res.send("Welcome to Madhuvan Minerals backend server!!!");
 });
 
 // Handling all other routes with a 404 error
