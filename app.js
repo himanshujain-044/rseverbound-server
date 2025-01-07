@@ -1,6 +1,9 @@
 const express = require("express");
 const ErrorClass = require("./src/utility/error");
 const usersRoutes = require("./src/routes/users");
+const billsRoutes = require("./src/routes/bills");
+const buyersRoutes = require("./src/routes/buyers");
+const vehiclesRoutes = require("./src/routes/vehicles");
 const app = express();
 
 app.use(express.json());
@@ -21,6 +24,9 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/users", usersRoutes);
+app.use("/api/bills", billsRoutes);
+app.use("/api/buyers", buyersRoutes);
+app.use("/api/vehicles", vehiclesRoutes);
 // Define a route handler
 app.get("/api", (req, res) => {
   res.send("Welcome to Madhuvan Minerals backend server!!!");
