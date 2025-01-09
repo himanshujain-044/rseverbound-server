@@ -1,21 +1,21 @@
 const { AMOUNT_PAID, TIME_UNITS, OTP_TYPE } = require("../constants/enum");
 const { STATUS } = require("../constants/messages");
 const { signToken } = require("../middleware/auth");
-const { Buyers } = require("../models/buyers");
+const Sells = require("../models/sells");
 const Users = require("../models/users");
 const { decryptPassword, encryptPassword } = require("../utility/common");
 const ErrorClass = require("../utility/error");
 
 module.exports = {
-  getAllBuyers: async (req, res, next) => {
+  saveInvoiceDetails: async (req, res, next) => {
     try {
-      const allBuyers = await Buyers.find().select(
-        "-_id name address state gst"
-      );
-      res.status(200).send({
-        code: 200,
-        message: "All buyers fetched successfully !",
-        data: allBuyers,
+      const invoiceDetails = req.body;
+      console.log("13", invoiceDetails);
+      const invoice = new Sells(invoiceDetails);
+      await invoice.save();
+      res.status(201).send({
+        code: 201,
+        message: "Invoice generated successfully !",
       });
     } catch (err) {
       console.error(err);

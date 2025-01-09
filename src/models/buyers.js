@@ -8,8 +8,6 @@ const BuyersSchema = new mongoose.Schema(
     address: {
       type: String,
       required: true,
-      unique: true,
-      lowercase: true,
     },
     gst: {
       type: String,
@@ -27,4 +25,4 @@ const BuyersSchema = new mongoose.Schema(
 );
 
 const Buyers = mongoose.model("mmbuyers", BuyersSchema);
-module.exports = Buyers;
+module.exports = { Buyers, BuyersSchema };
