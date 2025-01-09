@@ -31,6 +31,9 @@ const ProductsSellDetailsSchema = new mongoose.Schema({
   otherExpenses: {
     type: String,
   },
+  otherExpensesText: {
+    type: String,
+  },
   grandTotal: { type: Number, required: true },
 });
 
@@ -68,6 +71,12 @@ const SellsSchema = new mongoose.Schema(
     vehicleNo: {
       type: String,
       required: true,
+    },
+    etpNo: {
+      type: String,
+    },
+    ewayBillNo: {
+      type: String,
     },
     productsSellDetails: ProductsSellDetailsSchema,
   },
