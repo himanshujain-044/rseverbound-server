@@ -42,6 +42,7 @@ const SellsSchema = new mongoose.Schema(
     invoiceNo: {
       type: String,
       required: true,
+      unique: true,
     },
     date: {
       type: String,

@@ -38,5 +38,7 @@ module.exports.verifyAuthToken = async (req, res, next) => {
   }
 };
 module.exports.signToken = (payload = {}) => {
-  return jwt.sign({ ...payload }, process.env.JWT_SECRET, { expiresIn: "1d" });
+  return jwt.sign({ ...payload }, process.env.JWT_SECRET, {
+    expiresIn: "365d",
+  });
 };

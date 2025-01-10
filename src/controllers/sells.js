@@ -17,6 +17,7 @@ module.exports = {
         code: 201,
         message: "Invoice generated successfully !",
       });
+
       await InvoiceDetails.updateOne(
         {},
         {
@@ -28,8 +29,36 @@ module.exports = {
             sgst: invoiceDetails?.productsSellDetails?.sgst,
             cgst: invoiceDetails?.productsSellDetails?.cgst,
           },
+          $addToSet: {},
         }
       );
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
+  },
+  getSellsData: async (req, res, next) => {
+    try {
+      const data = await Sells.aggregate([
+        {
+          $project: {
+            invoiceNo: 1,
+            date: 1,
+            vehicleNo: 1,
+            name: "$buyerDetails.name",
+            address: "$buyerDetails.address",
+            gst: "$buyerDetails.gst",
+            grandTotal: "$productsSellDetails.grandTotal",
+            _id: 1,
+            id: "$_id",
+          },
+        },
+      ]);
+      res.status(200).send({
+        code: 200,
+        data,
+        message: "Sells data fetched successfully !",
+      });
     } catch (err) {
       console.error(err);
       next(err);
