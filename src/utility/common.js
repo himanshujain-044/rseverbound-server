@@ -41,3 +41,21 @@ module.exports.calculateTimeDifference = (time1, time2, unit = "seconds") => {
   const moment2 = moment(time2);
   return moment2.diff(moment1, unit);
 };
+
+module.exports.uniqueArray = (arr1, arr2) => {
+  let arr = [];
+  if (arr1?.length > 0) {
+    if (arr2?.length > 0) {
+      arr = [...arr1, ...arr2];
+    } else {
+      arr = [...arr1];
+    }
+  } else if (arr2?.length > 0) {
+    if (arr1?.length > 0) {
+      arr = [...arr1, ...arr2];
+    } else {
+      arr = [...arr2];
+    }
+  }
+  return [...new Set(arr)];
+};

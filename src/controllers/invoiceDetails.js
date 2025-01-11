@@ -9,9 +9,10 @@ const ErrorClass = require("../utility/error");
 module.exports = {
   invoiceDetails: async (req, res, next) => {
     try {
-      const invoiceDetails = await InvoiceDetails.findOne().select(
-        "-_id nextInvoiceNo hsnCode igst cgst sgst"
-      );
+      const invoiceDetails =
+        (await InvoiceDetails.findOne().select(
+          "-_id nextInvoiceNo hsnCodes igst cgst sgst vehicles destinations"
+        )) || {};
       res.status(200).send({
         code: 200,
         message: "Invoice details fetched successfully !",

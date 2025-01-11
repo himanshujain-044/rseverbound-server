@@ -4,15 +4,43 @@ const { signToken } = require("../middleware/auth");
 const InvoiceDetails = require("../models/invoiceDetails");
 const Sells = require("../models/sells");
 const Users = require("../models/users");
-const { decryptPassword, encryptPassword } = require("../utility/common");
+const {
+  decryptPassword,
+  encryptPassword,
+  uniqueArray,
+} = require("../utility/common");
 const ErrorClass = require("../utility/error");
 
 module.exports = {
   saveInvoiceDetails: async (req, res, next) => {
     try {
-      const invoiceDetails = req.body;
-      const invoice = new Sells(invoiceDetails);
+      const invoiceDetailsBody = req.body;
+      const invoice = new Sells(invoiceDetailsBody);
       await invoice.save();
+
+      const invoiceDetails = await InvoiceDetails.findOne().select(
+        "-_id nextInvoiceNo hsnCodes igst cgst sgst vehicles destinations"
+      );
+
+      const hsnCodes =
+        invoiceDetailsBody?.productsSellDetails?.productsSell?.map(
+          (productSell) => productSell?.hsnCode?.toUpperCase()
+        );
+
+      const updatedInvoiceDetails = {
+        nextInvoiceNo: Number(invoiceDetails?.nextInvoiceNo) + 1,
+        hsnCodes: uniqueArray(invoiceDetails?.hsnCodes, hsnCodes),
+        vehicles: uniqueArray(invoiceDetails?.vehicles, [
+          invoiceDetailsBody?.vehicleNo,
+        ]),
+        destinations: uniqueArray(invoiceDetails?.destinations, [
+          invoiceDetailsBody?.destination,
+        ]),
+        igst: Number(invoiceDetailsBody?.productsSellDetails?.igst || 0),
+        sgst: Number(invoiceDetailsBody?.productsSellDetails?.sgst || 0) / 2,
+        cgst: Number(invoiceDetailsBody?.productsSellDetails?.cgst || 0) / 2,
+      };
+
       res.status(201).send({
         code: 201,
         message: "Invoice generated successfully !",
@@ -21,15 +49,7 @@ module.exports = {
       await InvoiceDetails.updateOne(
         {},
         {
-          $set: {
-            nextInvoiceNo: Number(invoiceDetails?.invoiceNo) + 1,
-            hsnCode:
-              invoiceDetails?.productsSellDetails?.productsSell[0].hsnCode,
-            igst: invoiceDetails?.productsSellDetails?.igst,
-            sgst: invoiceDetails?.productsSellDetails?.sgst,
-            cgst: invoiceDetails?.productsSellDetails?.cgst,
-          },
-          $addToSet: {},
+          $set: updatedInvoiceDetails,
         }
       );
     } catch (err) {
