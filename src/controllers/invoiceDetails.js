@@ -11,7 +11,7 @@ module.exports = {
     try {
       const invoiceDetails =
         (await InvoiceDetails.findOne().select(
-          "-_id nextInvoiceNo hsnCodes igst cgst sgst vehicles destinations"
+          "-_id nextInvoiceNo hsnCodes igst cgst sgst vehicles destinations products"
         )) || {};
       res.status(200).send({
         code: 200,

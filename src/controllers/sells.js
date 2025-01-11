@@ -1,6 +1,7 @@
 const { AMOUNT_PAID, TIME_UNITS, OTP_TYPE } = require("../constants/enum");
 const { STATUS } = require("../constants/messages");
 const { signToken } = require("../middleware/auth");
+const { Buyers } = require("../models/buyers");
 const InvoiceDetails = require("../models/invoiceDetails");
 const Sells = require("../models/sells");
 const Users = require("../models/users");
@@ -19,26 +20,36 @@ module.exports = {
       await invoice.save();
 
       const invoiceDetails = await InvoiceDetails.findOne().select(
-        "-_id nextInvoiceNo hsnCodes igst cgst sgst vehicles destinations"
+        "-_id nextInvoiceNo hsnCodes igst cgst sgst vehicles destinations products"
       );
 
-      const hsnCodes =
-        invoiceDetailsBody?.productsSellDetails?.productsSell?.map(
-          (productSell) => productSell?.hsnCode?.toUpperCase()
-        );
+      const hsnCodes = [];
+      const products = [];
+      invoiceDetailsBody?.productsSellDetails?.productsSell?.forEach(
+        (productSell) => {
+          hsnCodes.push(productSell?.hsnCode?.toUpperCase());
+          products.push(productSell?.description?.toUpperCase());
+        }
+      );
 
+      const gstPercentage = Number(
+        invoiceDetailsBody?.productsSellDetails?.igst ||
+          invoiceDetailsBody?.productsSellDetails?.sgst ||
+          0
+      );
       const updatedInvoiceDetails = {
         nextInvoiceNo: Number(invoiceDetails?.nextInvoiceNo) + 1,
         hsnCodes: uniqueArray(invoiceDetails?.hsnCodes, hsnCodes),
+        products: uniqueArray(invoiceDetails?.products, products),
         vehicles: uniqueArray(invoiceDetails?.vehicles, [
           invoiceDetailsBody?.vehicleNo,
         ]),
         destinations: uniqueArray(invoiceDetails?.destinations, [
           invoiceDetailsBody?.destination,
         ]),
-        igst: Number(invoiceDetailsBody?.productsSellDetails?.igst || 0),
-        sgst: Number(invoiceDetailsBody?.productsSellDetails?.sgst || 0) / 2,
-        cgst: Number(invoiceDetailsBody?.productsSellDetails?.cgst || 0) / 2,
+        igst: gstPercentage,
+        sgst: gstPercentage / 2,
+        cgst: gstPercentage / 2,
       };
 
       res.status(201).send({
@@ -51,6 +62,12 @@ module.exports = {
         {
           $set: updatedInvoiceDetails,
         }
+      );
+      const { name, state, address, gst } = invoiceDetailsBody.buyerDetails;
+      const resul = await Buyers.findOneAndUpdate(
+        { name },
+        { name, state, address, gst },
+        { new: true, upsert: true }
       );
     } catch (err) {
       console.error(err);
@@ -73,8 +90,8 @@ module.exports = {
             gstAmount: "$productsSellDetails.gstAmount",
             otherExpensesText: "$productsSellDetails.otherExpensesText",
             otherExpenses: "$productsSellDetails.otherExpenses",
-            _id: 1,
-            id: "$_id",
+            _id: 0,
+            id: "$invoiceNo",
           },
         },
       ]);
@@ -82,6 +99,21 @@ module.exports = {
         code: 200,
         data,
         message: "Sells data fetched successfully !",
+      });
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
+  },
+
+  getSpecificSellData: async (req, res, next) => {
+    try {
+      const { invoiceNo } = req.query;
+      const data = await Sells.findOne({ invoiceNo }).select("-_id -__v");
+      res.status(200).send({
+        code: 200,
+        data,
+        message: "Sell data fetched successfully !",
       });
     } catch (err) {
       console.error(err);

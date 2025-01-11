@@ -5,11 +5,6 @@ const InvoiceDetailsSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    hsnCodes: [
-      {
-        type: String,
-      },
-    ],
     igst: {
       type: Number,
     },
@@ -19,8 +14,14 @@ const InvoiceDetailsSchema = new mongoose.Schema(
     cgst: {
       type: Number,
     },
+    hsnCodes: [
+      {
+        type: String,
+      },
+    ],
     destinations: [{ type: String }],
     vehicles: [{ type: String }],
+    products: [{ type: String }],
   },
   {
     timestamps: true,
