@@ -2,8 +2,6 @@ const express = require("express");
 const ErrorClass = require("./src/utility/error");
 const usersRoutes = require("./src/routes/users");
 const buyersRoutes = require("./src/routes/buyers");
-const vehiclesRoutes = require("./src/routes/vehicles");
-const productsRoutes = require("./src/routes/products");
 const sellsRoutes = require("./src/routes/sells");
 const invoiceDetailsRoutes = require("./src/routes/invoiceDetails");
 const app = express();
@@ -28,8 +26,6 @@ app.use((req, res, next) => {
 app.use("/api/users", usersRoutes);
 app.use("/api/invoice-details", invoiceDetailsRoutes);
 app.use("/api/buyers", buyersRoutes);
-app.use("/api/vehicles", vehiclesRoutes);
-app.use("/api/products", productsRoutes);
 app.use("/api/sells", sellsRoutes);
 // Define a route handler
 app.get("/api", (req, res) => {
