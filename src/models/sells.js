@@ -66,7 +66,10 @@ const SellsSchema = new mongoose.Schema(
       type: BuyersSchema,
       required: true,
     },
-    billLoadingNo: {
+    buyerOrderNoValue: {
+      type: String,
+    },
+    buyerOrderNoText: {
       type: String,
     },
     vehicleNo: {
