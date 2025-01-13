@@ -105,7 +105,6 @@ module.exports = {
       next(err);
     }
   },
-
   getSpecificSellData: async (req, res, next) => {
     try {
       const { invoiceNo } = req.query;
@@ -114,6 +113,67 @@ module.exports = {
         code: 200,
         data,
         message: "Sell data fetched successfully !",
+      });
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
+  },
+  getSellsReports: async (req, res, next) => {
+    try {
+      const { month, year } = req.query;
+      let filter = "";
+      if (month) {
+        filter = "-" + month;
+      }
+      if (year) {
+        filter = filter + "-" + year;
+      }
+      const data = await Sells.aggregate([
+        {
+          $match: { date: { $regex: new RegExp(filter, "i") } },
+        },
+        { $unwind: "$productsSellDetails.productsSell" },
+        {
+          $group: {
+            _id: {
+              date: "$date",
+              name: "$buyerDetails.name",
+              gst: "$buyerDetails.gst",
+              invoiceNo: "$invoiceNo",
+              igst: "$productsSellDetails.igst",
+              sgst: "$productsSellDetails.sgst",
+              cgst: "$productsSellDetails.cgst",
+              gstAmount: "$productsSellDetails.gstAmount",
+            },
+            weight: {
+              $sum: { $toDouble: "$productsSellDetails.productsSell.quantity" },
+            },
+            amount: {
+              $sum: { $toDouble: "$productsSellDetails.productsSell.amount" },
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0, // Exclude the _id field from the final output
+            date: "$_id.date",
+            weight: 1,
+            amount: 1,
+            name: "$_id.name",
+            gst: "$_id.gst",
+            invoiceNo: "$_id.invoiceNo",
+            igst: "$_id.igst",
+            sgst: "$_id.sgst",
+            cgst: "$_id.cgst",
+            gstAmount: "$_id.gstAmount",
+          },
+        },
+      ]);
+      res.status(200).send({
+        code: 200,
+        data,
+        message: "Sells report data fetched successfully !",
       });
     } catch (err) {
       console.error(err);
