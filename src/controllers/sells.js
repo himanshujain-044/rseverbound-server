@@ -64,7 +64,7 @@ module.exports = {
         }
       );
       const { name, state, address, gst } = invoiceDetailsBody.buyerDetails;
-      const resul = await Buyers.findOneAndUpdate(
+      await Buyers.findOneAndUpdate(
         { name },
         { name, state, address, gst },
         { new: true, upsert: true }
@@ -82,6 +82,7 @@ module.exports = {
             invoiceNo: 1,
             date: 1,
             vehicleNo: 1,
+            isInvoiceCancel: 1,
             name: "$buyerDetails.name",
             address: "$buyerDetails.address",
             gst: "$buyerDetails.gst",
@@ -90,7 +91,7 @@ module.exports = {
             gstAmount: "$productsSellDetails.gstAmount",
             otherExpensesText: "$productsSellDetails.otherExpensesText",
             otherExpenses: "$productsSellDetails.otherExpenses",
-            _id: 0,
+            _id: "$invoiceNo",
             id: "$invoiceNo",
           },
         },
@@ -174,6 +175,22 @@ module.exports = {
         code: 200,
         data,
         message: "Sells report data fetched successfully !",
+      });
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
+  },
+  updateInvoice: async (req, res, next) => {
+    try {
+      const { invoiceNo } = req.body;
+      await Sells.findOneAndUpdate(
+        { invoiceNo },
+        { $set: { isInvoiceCancel: true } }
+      );
+      res.status(200).send({
+        code: 200,
+        message: "Invoice has been updated successfully !",
       });
     } catch (err) {
       console.error(err);

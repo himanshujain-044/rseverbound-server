@@ -82,6 +82,7 @@ const SellsSchema = new mongoose.Schema(
     ewayBillNo: {
       type: String,
     },
+    isInvoiceCancel: { type: Boolean },
     productsSellDetails: ProductsSellDetailsSchema,
   },
   {
