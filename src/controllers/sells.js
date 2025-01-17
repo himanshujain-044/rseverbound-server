@@ -132,7 +132,10 @@ module.exports = {
       }
       const data = await Sells.aggregate([
         {
-          $match: { date: { $regex: new RegExp(filter, "i") } },
+          $match: {
+            date: { $regex: new RegExp(filter, "i") },
+            isInvoiceCancel: false,
+          },
         },
         { $unwind: "$productsSellDetails.productsSell" },
         {
@@ -186,7 +189,8 @@ module.exports = {
       const { invoiceNo } = req.body;
       await Sells.findOneAndUpdate(
         { invoiceNo },
-        { $set: { isInvoiceCancel: true } }
+        [{ $set: { isInvoiceCancel: { $eq: [false, "$isInvoiceCancel"] } } }]
+        // { $set: { isInvoiceCancel: true } }
       );
       res.status(200).send({
         code: 200,
