@@ -22,6 +22,7 @@ const InvoiceDetailsSchema = new mongoose.Schema(
     destinations: [{ type: String }],
     vehicles: [{ type: String }],
     products: [{ type: String }],
+    transportCompanies: [{ type: String }],
   },
   {
     timestamps: true,

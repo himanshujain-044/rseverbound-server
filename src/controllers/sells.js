@@ -20,7 +20,7 @@ module.exports = {
       await invoice.save();
 
       const invoiceDetails = await InvoiceDetails.findOne().select(
-        "-_id nextInvoiceNo hsnCodes igst cgst sgst vehicles destinations products"
+        "-_id nextInvoiceNo hsnCodes igst cgst sgst vehicles destinations products transportCompanies"
       );
 
       const hsnCodes = [];
@@ -46,6 +46,9 @@ module.exports = {
         ]),
         destinations: uniqueArray(invoiceDetails?.destinations, [
           invoiceDetailsBody?.destination,
+        ]),
+        transportCompanies: uniqueArray(invoiceDetails?.transportCompanies, [
+          invoiceDetailsBody?.transportCompany,
         ]),
         igst: gstPercentage,
         sgst: gstPercentage / 2,
