@@ -8,6 +8,8 @@ const ProductsSellSchema = new mongoose.Schema({
     required: true,
   },
   description: { type: String, required: true },
+  bagsCount: { type: String, required: true },
+  bagWeight: { type: String, required: true },
   hsnCode: {
     type: String,
   },
@@ -35,6 +37,7 @@ const ProductsSellDetailsSchema = new mongoose.Schema({
     type: String,
   },
   grandTotal: { type: Number, required: true },
+  roundOff: { type: Object, required: true },
 });
 
 const SellsSchema = new mongoose.Schema(

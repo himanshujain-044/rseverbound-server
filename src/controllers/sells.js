@@ -190,11 +190,9 @@ module.exports = {
   updateInvoice: async (req, res, next) => {
     try {
       const { invoiceNo } = req.body;
-      await Sells.findOneAndUpdate(
-        { invoiceNo },
-        [{ $set: { isInvoiceCancel: { $eq: [false, "$isInvoiceCancel"] } } }]
-        // { $set: { isInvoiceCancel: true } }
-      );
+      await Sells.findOneAndUpdate({ invoiceNo }, [
+        { $set: { isInvoiceCancel: { $eq: [false, "$isInvoiceCancel"] } } },
+      ]);
       res.status(200).send({
         code: 200,
         message: "Invoice has been updated successfully !",
