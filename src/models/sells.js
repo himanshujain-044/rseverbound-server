@@ -8,8 +8,8 @@ const ProductsSellSchema = new mongoose.Schema({
     required: true,
   },
   description: { type: String, required: true },
-  bagsCount: { type: String, required: true },
-  bagWeight: { type: String, required: true },
+  bagsCount: { type: String },
+  bagWeight: { type: String },
   hsnCode: {
     type: String,
   },
@@ -64,6 +64,9 @@ const SellsSchema = new mongoose.Schema(
     destination: {
       type: String,
       required: true,
+    },
+    shipTo: {
+      type: String,
     },
     buyerDetails: {
       type: BuyersSchema,
