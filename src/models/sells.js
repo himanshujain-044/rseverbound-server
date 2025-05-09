@@ -65,8 +65,12 @@ const SellsSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    shipTo: {
-      type: String,
+    shipToDetails: {
+      type: BuyersSchema,
+    },
+    isShiptoBDSame: {
+      type: Boolean,
+      required: true,
     },
     buyerDetails: {
       type: BuyersSchema,

@@ -72,6 +72,18 @@ module.exports = {
         { name, state, address, gst },
         { new: true, upsert: true }
       );
+
+      const {
+        name: n,
+        state: s,
+        address: a,
+        gst: g,
+      } = invoiceDetailsBody.shipTo;
+      await Buyers.findOneAndUpdate(
+        { name: n },
+        { name: n, state: s, address: a, gst: g },
+        { new: true, upsert: true }
+      );
     } catch (err) {
       console.error(err);
       next(err);
