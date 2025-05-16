@@ -31,19 +31,19 @@ const ProductsSellDetailsSchema = new mongoose.Schema({
   },
   gstAmount: { type: Number },
   otherExpenses: {
-    type: String,
+    type: Number,
   },
   otherExpensesText: {
     type: String,
   },
   otherExpensesGST: {
-    type: String,
+    type: Number,
   },
   otherExpensesGSTText: {
     type: String,
   },
   totalProductAmount: {
-    type: String,
+    type: Number,
   },
   grandTotal: { type: Number, required: true },
   roundOff: { type: Object, required: true },

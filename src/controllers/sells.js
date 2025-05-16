@@ -164,6 +164,7 @@ module.exports = {
               sgst: "$productsSellDetails.sgst",
               cgst: "$productsSellDetails.cgst",
               gstAmount: "$productsSellDetails.gstAmount",
+              otherExpensesGST: "$productsSellDetails.otherExpensesGST",
             },
             weight: {
               $sum: { $toDouble: "$productsSellDetails.productsSell.quantity" },
@@ -186,6 +187,7 @@ module.exports = {
             sgst: "$_id.sgst",
             cgst: "$_id.cgst",
             gstAmount: "$_id.gstAmount",
+            otherExpensesGST: "$_id.otherExpensesGST",
           },
         },
       ]);
