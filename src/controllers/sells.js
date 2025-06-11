@@ -203,10 +203,16 @@ module.exports = {
   },
   updateInvoice: async (req, res, next) => {
     try {
-      const { invoiceNo } = req.body;
-      await Sells.findOneAndUpdate({ invoiceNo }, [
-        { $set: { isInvoiceCancel: { $eq: [false, "$isInvoiceCancel"] } } },
-      ]);
+      const { invoiceNo, isWholeInvoiceUpdate } = req.body;
+      if (isWholeInvoiceUpdate) {
+        const payload = req.body;
+        delete payload.isWholeInvoiceUpdate;
+        await Sells.findOneAndUpdate({ invoiceNo }, [{ $set: { ...payload } }]);
+      } else {
+        await Sells.findOneAndUpdate({ invoiceNo }, [
+          { $set: { isInvoiceCancel: { $eq: [false, "$isInvoiceCancel"] } } },
+        ]);
+      }
       res.status(200).send({
         code: 200,
         message: "Invoice has been updated successfully !",
