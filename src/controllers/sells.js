@@ -162,7 +162,6 @@ module.exports = {
               invoiceNo: "$invoiceNo",
               igst: "$productsSellDetails.igst",
               sgst: "$productsSellDetails.sgst",
-              cgst: "$productsSellDetails.cgst",
               gstAmount: "$productsSellDetails.gstAmount",
               otherExpensesGST: "$productsSellDetails.otherExpensesGST",
             },
@@ -185,9 +184,9 @@ module.exports = {
             invoiceNo: "$_id.invoiceNo",
             igst: "$_id.igst",
             sgst: "$_id.sgst",
-            cgst: "$_id.cgst",
             gstAmount: "$_id.gstAmount",
             otherExpensesGST: "$_id.otherExpensesGST",
+            id: "$_id.invoiceNo",
           },
         },
       ]);
