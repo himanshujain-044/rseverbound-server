@@ -221,4 +221,32 @@ module.exports = {
       next(err);
     }
   },
+  getBuyerSellData: async (req, res, next) => {
+    try {
+      const { buyerDetails, date } = req.query;
+      const [day, month, year] = date?.split("-");
+      const [companyName, gst] = buyerDetails?.split(",");
+      const data = await Sells.find({
+        "buyerDetails.gst": gst,
+        date: { $regex: `${month}-${year}`, $options: "i" },
+      })
+        .select("date invoiceNo productsSellDetails")
+        .lean();
+      const updatedData = data?.map((data) => {
+        return {
+          ...data,
+          grandTotal: data?.productsSellDetails?.grandTotal,
+          gstAmount: data?.productsSellDetails?.gstAmount,
+        };
+      });
+      res.status(200).send({
+        code: 200,
+        data: updatedData,
+        message: "Buyer sells data fetched successfully !",
+      });
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
+  },
 };
