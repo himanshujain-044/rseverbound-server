@@ -39,17 +39,27 @@ module.exports = {
   },
   getBuyerCreditData: async (req, res, next) => {
     try {
-      const { buyerDetails, date } = req.query;
-      const [day, month, year] = date?.split("-");
+      const { buyerDetails, financialYear } = req.query;
+      const [startYear, endYear] = financialYear?.split("-");
       const [companyName, gst] = buyerDetails?.split(",");
+      const regexDatePattern = new RegExp(
+        `(?:\\d{1,2}-(?:Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-${startYear})|` +
+          `(?:\\d{1,2}-(?:Jan|Feb|Mar)-${endYear})`
+      );
       const buyerCreditDetailsData = await BuyerCredit.find({
         gst,
-        date: { $regex: `${month}-${year}`, $options: "i" },
+        date: { $regex: regexDatePattern, $options: "i" },
       });
+      const totalFinanceYearCredAtm = buyerCreditDetailsData.reduce(
+        (acc, currVal) => {
+          return acc + currVal?.amount;
+        },
+        0
+      );
       res.status(200).send({
         code: 200,
         message: "Buyer's crdit detail fetched successfully !",
-        data: buyerCreditDetailsData,
+        data: { data: buyerCreditDetailsData, totalFinanceYearCredAtm },
       });
     } catch (err) {
       console.error(err);

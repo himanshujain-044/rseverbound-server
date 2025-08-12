@@ -223,16 +223,23 @@ module.exports = {
   },
   getBuyerSellData: async (req, res, next) => {
     try {
-      const { buyerDetails, date } = req.query;
-      const [day, month, year] = date?.split("-");
+      const { buyerDetails, financialYear } = req.query;
+      const [startYear, endYear] = financialYear?.split("-");
       const [companyName, gst] = buyerDetails?.split(",");
+      const regexDatePattern = new RegExp(
+        `(?:\\d{1,2}-(?:Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-${startYear})|` +
+          `(?:\\d{1,2}-(?:Jan|Feb|Mar)-${endYear})`
+      );
       const data = await Sells.find({
         "buyerDetails.gst": gst,
-        date: { $regex: `${month}-${year}`, $options: "i" },
+        date: { $regex: regexDatePattern, $options: "i" },
       })
         .select("date invoiceNo productsSellDetails")
         .lean();
+      let totalFinanceYearDebitAtm = 0;
       const updatedData = data?.map((data) => {
+        totalFinanceYearDebitAtm =
+          totalFinanceYearDebitAtm + data?.productsSellDetails?.grandTotal;
         return {
           ...data,
           grandTotal: data?.productsSellDetails?.grandTotal,
@@ -241,7 +248,7 @@ module.exports = {
       });
       res.status(200).send({
         code: 200,
-        data: updatedData,
+        data: { data: updatedData, totalFinanceYearDebitAtm },
         message: "Buyer sells data fetched successfully !",
       });
     } catch (err) {
