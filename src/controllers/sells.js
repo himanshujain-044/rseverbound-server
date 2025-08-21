@@ -27,8 +27,8 @@ module.exports = {
       const products = [];
       invoiceDetailsBody?.productsSellDetails?.productsSell?.forEach(
         (productSell) => {
-          hsnCodes.push(productSell?.hsnCode?.toUpperCase());
-          products.push(productSell?.description?.toUpperCase());
+          hsnCodes.push(productSell?.hsnCode?.toUpperCase()?.trim());
+          products.push(productSell?.description?.toUpperCase()?.trim());
         }
       );
 
@@ -68,7 +68,7 @@ module.exports = {
       );
       const { name, state, address, gst } = invoiceDetailsBody.buyerDetails;
       await Buyers.findOneAndUpdate(
-        { name },
+        { gst },
         { name, state, address, gst },
         { new: true, upsert: true }
       );
@@ -80,7 +80,7 @@ module.exports = {
         gst: g,
       } = invoiceDetailsBody.shipTo;
       await Buyers.findOneAndUpdate(
-        { name: n },
+        { gst: g },
         { name: n, state: s, address: a, gst: g },
         { new: true, upsert: true }
       );
@@ -233,6 +233,7 @@ module.exports = {
       const data = await Sells.find({
         "buyerDetails.gst": gst,
         date: { $regex: regexDatePattern, $options: "i" },
+        isInvoiceCancel: false,
       })
         .select("date invoiceNo productsSellDetails")
         .lean();
