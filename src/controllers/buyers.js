@@ -66,4 +66,25 @@ module.exports = {
       next(err);
     }
   },
+  getAllBuyersCredit: async (req, res, next) => {
+    try {
+      const { financialYear } = req.query;
+      const [startYear, endYear] = financialYear?.split("-");
+      const regexDatePattern = new RegExp(
+        `(?:\\d{1,2}-(?:Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-${startYear})|` +
+          `(?:\\d{1,2}-(?:Jan|Feb|Mar)-${endYear})`
+      );
+      const allBuyersCredit = await BuyerCredit.find({
+        date: { $regex: regexDatePattern, $options: "i" },
+      });
+      res.status(200).send({
+        code: 200,
+        message: "All buyers credit fetched successfully !",
+        data: allBuyersCredit,
+      });
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
+  },
 };

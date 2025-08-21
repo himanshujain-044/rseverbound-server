@@ -5,6 +5,7 @@ const {
 
   saveBuyerCreditDetails,
   getBuyerCreditData,
+  getAllBuyersCredit,
 } = require("../controllers/buyers");
 const buyersRoutes = express.Router();
 buyersRoutes.get("/all-buyers", verifyAuthToken, getAllBuyers);
@@ -14,4 +15,5 @@ buyersRoutes.post(
   saveBuyerCreditDetails
 );
 buyersRoutes.get("/buyer-credit-amount", verifyAuthToken, getBuyerCreditData);
+buyersRoutes.get("/all-buyer-credit", verifyAuthToken, getAllBuyersCredit);
 module.exports = buyersRoutes;
