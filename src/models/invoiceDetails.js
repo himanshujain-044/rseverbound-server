@@ -31,7 +31,7 @@ const InvoiceDetailsSchema = new mongoose.Schema(
 );
 
 const InvoiceDetails = mongoose.model(
-  "mminvoice-details",
+  "rsinvoice-details",
   InvoiceDetailsSchema
 );
 module.exports = InvoiceDetails;

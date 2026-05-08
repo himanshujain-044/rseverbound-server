@@ -113,5 +113,5 @@ const SellsSchema = new mongoose.Schema(
   }
 );
 
-const Sells = mongoose.model("mmsells", SellsSchema);
+const Sells = mongoose.model("rssells", SellsSchema);
 module.exports = Sells;

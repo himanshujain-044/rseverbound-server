@@ -25,5 +25,5 @@ const BuyerCreditSchema = new mongoose.Schema(
   }
 );
 
-const BuyerCredit = mongoose.model("mmbuyercredit", BuyerCreditSchema);
+const BuyerCredit = mongoose.model("rsbuyercredit", BuyerCreditSchema);
 module.exports = { BuyerCredit, BuyerCreditSchema };

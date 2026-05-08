@@ -31,7 +31,7 @@ app.use("/api/sells", sellsRoutes);
 app.use("/api/industry", industryRoutes);
 // Define a route handler
 app.get("/api", (req, res) => {
-  res.send("Welcome to Madhuvan Minerals backend server!!!");
+  res.send("Welcome to RS Ever Bound backend server!!!");
 });
 
 // Handling all other routes with a 404 error

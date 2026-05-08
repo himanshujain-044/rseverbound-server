@@ -24,5 +24,5 @@ const BuyersSchema = new mongoose.Schema(
   }
 );
 
-const Buyers = mongoose.model("mmbuyers", BuyersSchema);
+const Buyers = mongoose.model("rsbuyers", BuyersSchema);
 module.exports = { Buyers, BuyersSchema };
