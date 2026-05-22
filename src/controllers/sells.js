@@ -16,11 +16,12 @@ module.exports = {
   saveInvoiceDetails: async (req, res, next) => {
     try {
       const invoiceDetailsBody = req.body;
+      console.log("19", invoiceDetailsBody);
       const invoice = new Sells(invoiceDetailsBody);
       await invoice.save();
 
       const invoiceDetails = await InvoiceDetails.findOne().select(
-        "-_id nextInvoiceNo hsnCodes igst cgst sgst vehicles destinations products transportCompanies"
+        "-_id nextInvoiceNo hsnCodes igst cgst sgst vehicles destinations products transportCompanies",
       );
 
       const hsnCodes = [];
@@ -29,13 +30,13 @@ module.exports = {
         (productSell) => {
           hsnCodes.push(productSell?.hsnCode?.toUpperCase()?.trim());
           products.push(productSell?.description?.toUpperCase()?.trim());
-        }
+        },
       );
 
       const gstPercentage = Number(
         invoiceDetailsBody?.productsSellDetails?.igst ||
           invoiceDetailsBody?.productsSellDetails?.sgst ||
-          0
+          0,
       );
       const updatedInvoiceDetails = {
         nextInvoiceNo: Number(invoiceDetails?.nextInvoiceNo) + 1,
@@ -64,13 +65,13 @@ module.exports = {
         {},
         {
           $set: updatedInvoiceDetails,
-        }
+        },
       );
       const { name, state, address, gst } = invoiceDetailsBody.buyerDetails;
       await Buyers.findOneAndUpdate(
         { gst },
         { name, state, address, gst },
-        { new: true, upsert: true }
+        { new: true, upsert: true },
       );
 
       const {
@@ -82,7 +83,7 @@ module.exports = {
       await Buyers.findOneAndUpdate(
         { gst: g },
         { name: n, state: s, address: a, gst: g },
-        { new: true, upsert: true }
+        { new: true, upsert: true },
       );
     } catch (err) {
       console.error(err);
@@ -228,7 +229,7 @@ module.exports = {
       const [companyName, gst] = buyerDetails?.split(",");
       const regexDatePattern = new RegExp(
         `(?:\\d{1,2}-(?:Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-${startYear})|` +
-          `(?:\\d{1,2}-(?:Jan|Feb|Mar)-${endYear})`
+          `(?:\\d{1,2}-(?:Jan|Feb|Mar)-${endYear})`,
       );
       const data = await Sells.find({
         "buyerDetails.gst": gst,

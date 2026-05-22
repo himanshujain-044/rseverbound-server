@@ -8,12 +8,13 @@ const ProductsSellSchema = new mongoose.Schema({
     required: true,
   },
   description: { type: String, required: true },
-  bagsCount: { type: String },
-  bagWeight: { type: String },
+
+  // bagWeight: { type: String },
   hsnCode: {
     type: String,
   },
   quantity: { type: Number, required: true },
+  unit: { type: String },
   ratePMT: { type: Number, required: true },
   amount: { type: Number, required: true },
 });
@@ -110,7 +111,7 @@ const SellsSchema = new mongoose.Schema(
   {
     timestamps: true,
     validateBeforeSave: true,
-  }
+  },
 );
 
 const Sells = mongoose.model("rssells", SellsSchema);
