@@ -2,6 +2,7 @@ const { AMOUNT_PAID, TIME_UNITS, OTP_TYPE } = require("../constants/enum");
 const { STATUS } = require("../constants/messages");
 const { signToken } = require("../middleware/auth");
 const { Buyers } = require("../models/buyers");
+const DeliveryChallan = require("../models/deliveryChallan");
 const InvoiceDetails = require("../models/invoiceDetails");
 const Sells = require("../models/sells");
 const Users = require("../models/users");
@@ -17,9 +18,15 @@ module.exports = {
   saveInvoiceDetails: async (req, res, next) => {
     try {
       const invoiceDetailsBody = req.body;
+      const { billType } = req.body;
       console.log("19", invoiceDetailsBody);
-      const invoice = new Sells(invoiceDetailsBody);
-      await invoice.save();
+      if (billType === "invoice") {
+        const invoice = new Sells(invoiceDetailsBody);
+        await invoice.save();
+      } else {
+        const deliveryChallan = new DeliveryChallan(invoiceDetailsBody);
+        await deliveryChallan.save();
+      }
 
       const invoiceDetails = await InvoiceDetails.findOne().select(
         "-_id nextInvoiceNo hsnCodes igst cgst sgst vehicles destinations products transportCompanies",
