@@ -22,7 +22,7 @@ const BuyerCreditSchema = new mongoose.Schema(
   {
     timestamps: true,
     validateBeforeSave: true,
-  }
+  },
 );
 
 const BuyerCredit = mongoose.model("rsbuyercredit", BuyerCreditSchema);

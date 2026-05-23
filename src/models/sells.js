@@ -57,10 +57,11 @@ const SellsSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    date: {
+    invoiceDate: {
       type: String,
       required: true,
     },
+    date: { type: String },
     buyerOrderNo: {
       type: String,
     },
@@ -92,19 +93,19 @@ const SellsSchema = new mongoose.Schema(
     buyerOrderNoText: {
       type: String,
     },
-    vehicleNo: {
-      type: String,
-      required: true,
-    },
-    etpNo: {
-      type: String,
-    },
-    ewayBillNo: {
-      type: String,
-    },
-    transportCompany: {
-      type: String,
-    },
+    // vehicleNo: {
+    //   type: String,
+    //   required: true,
+    // },
+    // etpNo: {
+    //   type: String,
+    // },
+    // ewayBillNo: {
+    //   type: String,
+    // },
+    // transportCompany: {
+    //   type: String,
+    // },
     isInvoiceCancel: { type: Boolean, default: false },
     productsSellDetails: ProductsSellDetailsSchema,
   },

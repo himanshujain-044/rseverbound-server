@@ -17,11 +17,14 @@ const BuyersSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    placeOfSupply: {
+      type: String,
+    },
   },
   {
     timestamps: true,
     validateBeforeSave: true,
-  }
+  },
 );
 
 const Buyers = mongoose.model("rsbuyers", BuyersSchema);

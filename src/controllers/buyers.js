@@ -11,7 +11,7 @@ module.exports = {
   getAllBuyers: async (req, res, next) => {
     try {
       const allBuyers = await Buyers.find().select(
-        "-_id name address state gst"
+        "-_id name address state gst placeOfSupply",
       );
       res.status(200).send({
         code: 200,
@@ -44,7 +44,7 @@ module.exports = {
       const [companyName, gst] = buyerDetails?.split(",");
       const regexDatePattern = new RegExp(
         `(?:\\d{1,2}-(?:Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-${startYear})|` +
-          `(?:\\d{1,2}-(?:Jan|Feb|Mar)-${endYear})`
+          `(?:\\d{1,2}-(?:Jan|Feb|Mar)-${endYear})`,
       );
       const buyerCreditDetailsData = await BuyerCredit.find({
         gst,
@@ -54,7 +54,7 @@ module.exports = {
         (acc, currVal) => {
           return acc + currVal?.amount;
         },
-        0
+        0,
       );
       res.status(200).send({
         code: 200,
@@ -72,7 +72,7 @@ module.exports = {
       const [startYear, endYear] = financialYear?.split("-");
       const regexDatePattern = new RegExp(
         `(?:\\d{1,2}-(?:Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-${startYear})|` +
-          `(?:\\d{1,2}-(?:Jan|Feb|Mar)-${endYear})`
+          `(?:\\d{1,2}-(?:Jan|Feb|Mar)-${endYear})`,
       );
       const allBuyersCredit = await BuyerCredit.find({
         date: { $regex: regexDatePattern, $options: "i" },

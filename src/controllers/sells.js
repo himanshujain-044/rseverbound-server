@@ -9,6 +9,7 @@ const {
   decryptPassword,
   encryptPassword,
   uniqueArray,
+  getNextInvoiceNumber,
 } = require("../utility/common");
 const ErrorClass = require("../utility/error");
 
@@ -38,8 +39,9 @@ module.exports = {
           invoiceDetailsBody?.productsSellDetails?.sgst ||
           0,
       );
+
       const updatedInvoiceDetails = {
-        nextInvoiceNo: Number(invoiceDetails?.nextInvoiceNo) + 1,
+        nextInvoiceNo: getNextInvoiceNumber(invoiceDetails?.nextInvoiceNo),
         hsnCodes: uniqueArray(invoiceDetails?.hsnCodes, hsnCodes),
         products: uniqueArray(invoiceDetails?.products, products),
         vehicles: uniqueArray(invoiceDetails?.vehicles, [
@@ -67,13 +69,14 @@ module.exports = {
           $set: updatedInvoiceDetails,
         },
       );
-      const { name, state, address, gst } = invoiceDetailsBody.buyerDetails;
+      const { name, state, address, gst, placeOfSupply } =
+        invoiceDetailsBody.buyerDetails;
       await Buyers.findOneAndUpdate(
         { gst },
-        { name, state, address, gst },
+        { name, state, address, gst, placeOfSupply },
         { new: true, upsert: true },
       );
-       const {
+      const {
         name: n,
         state: s,
         address: a,
@@ -81,7 +84,7 @@ module.exports = {
       } = invoiceDetailsBody.shipToDetails;
       await Buyers.findOneAndUpdate(
         { gst: g },
-        { name: n, state: s, address: a, gst: g },
+        { name: n, state: s, address: a, gst: g, placeOfSupply: s },
         { new: true, upsert: true },
       );
     } catch (err) {
@@ -95,7 +98,7 @@ module.exports = {
         {
           $project: {
             invoiceNo: 1,
-            date: 1,
+            invoiceDate: 1,
             vehicleNo: 1,
             isInvoiceCancel: 1,
             name: "$buyerDetails.name",
@@ -148,7 +151,7 @@ module.exports = {
       const data = await Sells.aggregate([
         {
           $match: {
-            date: { $regex: new RegExp(filter, "i") },
+            invoiceDate: { $regex: new RegExp(filter, "i") },
             isInvoiceCancel: false,
           },
         },
@@ -156,7 +159,7 @@ module.exports = {
         {
           $group: {
             _id: {
-              date: "$date",
+              invoiceDate: "$invoiceDate",
               name: "$buyerDetails.name",
               gst: "$buyerDetails.gst",
               invoiceNo: "$invoiceNo",
@@ -176,7 +179,7 @@ module.exports = {
         {
           $project: {
             _id: 0, // Exclude the _id field from the final output
-            date: "$_id.date",
+            invoiceDate: "$_id.invoiceDate",
             weight: 1,
             amount: 1,
             name: "$_id.name",
@@ -206,6 +209,20 @@ module.exports = {
       if (isWholeInvoiceUpdate) {
         const payload = req.body;
         delete payload.isWholeInvoiceUpdate;
+        const sellInvoiceDet = await Sells.findOne({ invoiceNo });
+        console.log("210", sellInvoiceDet, "payload", payload);
+        if (
+          sellInvoiceDet?.productsSellDetails?.igst &&
+          payload?.productsSellDetails?.sgst
+        ) {
+          delete payload.productsSellDetails.igst;
+        }
+        if (
+          sellInvoiceDet?.productsSellDetails?.sgst &&
+          payload?.productsSellDetails?.igst
+        ) {
+          delete payload.productsSellDetails.sgst;
+        }
         await Sells.findOneAndUpdate({ invoiceNo }, [{ $set: { ...payload } }]);
       } else {
         await Sells.findOneAndUpdate({ invoiceNo }, [
@@ -232,10 +249,10 @@ module.exports = {
       );
       const data = await Sells.find({
         "buyerDetails.gst": gst,
-        date: { $regex: regexDatePattern, $options: "i" },
+        invoiceDate: { $regex: regexDatePattern, $options: "i" },
         isInvoiceCancel: false,
       })
-        .select("date invoiceNo productsSellDetails")
+        .select("invoiceDate invoiceNo productsSellDetails")
         .lean();
       let totalFinanceYearDebitAtm = 0;
       const updatedData = data?.map((data) => {

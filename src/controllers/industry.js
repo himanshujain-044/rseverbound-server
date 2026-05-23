@@ -11,7 +11,7 @@ module.exports = {
       );
       const data = await Sells.aggregate([
         {
-          $match: { date: { $regex: regexDatePattern, $options: "i" } },
+          $match: { invoiceDate: { $regex: regexDatePattern, $options: "i" } },
         },
         { $unwind: "$productsSellDetails.productsSell" },
         {
