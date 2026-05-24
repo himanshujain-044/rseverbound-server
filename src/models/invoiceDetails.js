@@ -5,6 +5,10 @@ const InvoiceDetailsSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    nextDeliveryChNo: {
+      type: String,
+      required: true,
+    },
     igst: {
       type: Number,
     },
@@ -27,11 +31,11 @@ const InvoiceDetailsSchema = new mongoose.Schema(
   {
     timestamps: true,
     validateBeforeSave: true,
-  }
+  },
 );
 
 const InvoiceDetails = mongoose.model(
   "rsinvoice-details",
-  InvoiceDetailsSchema
+  InvoiceDetailsSchema,
 );
 module.exports = InvoiceDetails;

@@ -61,24 +61,15 @@ module.exports.uniqueArray = (arr1, arr2) => {
 };
 
 module.exports.getNextInvoiceNumber = (lastInvoiceNumber) => {
-  // 1. Calculate the current financial year based on today's date
   const today = new Date();
-  const currentMonth = today.getMonth(); // 0 = January, 3 = April
+  const currentMonth = today.getMonth();
   const currentYear = today.getFullYear();
-
-  // Financial year changes on April 1st (Month index 3)
   let startYear = currentMonth >= 3 ? currentYear : currentYear - 1;
   let endYear = startYear + 1;
-
-  // Format to "26-27"
   const currentFinYearStr = `${String(startYear).slice(-2)}-${String(endYear).slice(-2)}`;
-
-  // 2. Fallback if no previous invoice exists (e.g., brand new system setup)
   if (!lastInvoiceNumber) {
     return `INV/${currentFinYearStr}/01`;
   }
-
-  // 3. Break down the last invoice (Expected: "INV/26-27/01")
   const parts = lastInvoiceNumber.split("/");
   if (parts.length !== 3) {
     throw new Error(
@@ -86,21 +77,45 @@ module.exports.getNextInvoiceNumber = (lastInvoiceNumber) => {
     );
   }
 
-  const lastFinYear = parts[1]; // Extracts "26-27"
-  const lastCounter = parseInt(parts[2], 10); // Extracts the number (e.g., 1)
+  const lastFinYear = parts[1];
+  const lastCounter = parseInt(parts[2], 10);
 
   let nextCounter;
-
-  // 4. Reset logic: Check if we have entered a new financial year
   if (currentFinYearStr !== lastFinYear) {
-    nextCounter = 1; // Reset to 1 because the fiscal year changed
+    nextCounter = 1;
   } else {
-    nextCounter = lastCounter + 1; // Increment normally
+    nextCounter = lastCounter + 1;
+  }
+  const paddedCounter = String(nextCounter).padStart(2, "0");
+  return `INV/${currentFinYearStr}/${paddedCounter}`;
+};
+
+module.exports.getNextDeliveryChNumber = (lastDeliveryChNumber) => {
+  const today = new Date();
+  const currentMonth = today.getMonth();
+  const currentYear = today.getFullYear();
+  let startYear = currentMonth >= 3 ? currentYear : currentYear - 1;
+  let endYear = startYear + 1;
+  const currentFinYearStr = `${String(startYear).slice(-2)}-${String(endYear).slice(-2)}`;
+  if (!lastDeliveryChNumber) {
+    return `DEL/${currentFinYearStr}/01`;
+  }
+  const parts = lastDeliveryChNumber.split("/");
+  if (parts.length !== 3) {
+    throw new Error(
+      "Invalid previous invoice format. Must match 'DEL/YY-YY/XX'",
+    );
   }
 
-  // 5. Pad the number with a leading zero if it's a single digit
-  const paddedCounter = String(nextCounter).padStart(2, "0");
+  const lastFinYear = parts[1];
+  const lastCounter = parseInt(parts[2], 10);
 
-  // 6. Return the newly constructed invoice string
-  return `INV/${currentFinYearStr}/${paddedCounter}`;
+  let nextCounter;
+  if (currentFinYearStr !== lastFinYear) {
+    nextCounter = 1;
+  } else {
+    nextCounter = lastCounter + 1;
+  }
+  const paddedCounter = String(nextCounter).padStart(2, "0");
+  return `DEL/${currentFinYearStr}/${paddedCounter}`;
 };

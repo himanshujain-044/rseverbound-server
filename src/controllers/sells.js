@@ -2,6 +2,7 @@ const { AMOUNT_PAID, TIME_UNITS, OTP_TYPE } = require("../constants/enum");
 const { STATUS } = require("../constants/messages");
 const { signToken } = require("../middleware/auth");
 const { Buyers } = require("../models/buyers");
+const DeliveryChallan = require("../models/deliveryChallan");
 const InvoiceDetails = require("../models/invoiceDetails");
 const Sells = require("../models/sells");
 const Users = require("../models/users");
@@ -10,6 +11,7 @@ const {
   encryptPassword,
   uniqueArray,
   getNextInvoiceNumber,
+  getNextDeliveryChNumber,
 } = require("../utility/common");
 const ErrorClass = require("../utility/error");
 
@@ -17,12 +19,18 @@ module.exports = {
   saveInvoiceDetails: async (req, res, next) => {
     try {
       const invoiceDetailsBody = req.body;
+      const { billType } = req.body;
       console.log("19", invoiceDetailsBody);
-      const invoice = new Sells(invoiceDetailsBody);
-      await invoice.save();
+      if (billType === "invoice") {
+        const invoice = new Sells(invoiceDetailsBody);
+        await invoice.save();
+      } else {
+        const deliveryChallan = new DeliveryChallan(invoiceDetailsBody);
+        await deliveryChallan.save();
+      }
 
       const invoiceDetails = await InvoiceDetails.findOne().select(
-        "-_id nextInvoiceNo hsnCodes igst cgst sgst vehicles destinations products transportCompanies",
+        "-_id nextInvoiceNo nextDeliveryChNo hsnCodes igst cgst sgst vehicles destinations products transportCompanies",
       );
 
       const hsnCodes = [];
@@ -39,9 +47,15 @@ module.exports = {
           invoiceDetailsBody?.productsSellDetails?.sgst ||
           0,
       );
-
       const updatedInvoiceDetails = {
-        nextInvoiceNo: getNextInvoiceNumber(invoiceDetails?.nextInvoiceNo),
+        nextInvoiceNo:
+          billType === "invoice"
+            ? getNextInvoiceNumber(invoiceDetails?.nextInvoiceNo)
+            : invoiceDetails?.nextInvoiceNo,
+        nextDeliveryChNo:
+          billType === "invoice"
+            ? invoiceDetails?.nextDeliveryChNo
+            : getNextDeliveryChNumber(invoiceDetails?.nextDeliveryChNo),
         hsnCodes: uniqueArray(invoiceDetails?.hsnCodes, hsnCodes),
         products: uniqueArray(invoiceDetails?.products, products),
         vehicles: uniqueArray(invoiceDetails?.vehicles, [
@@ -94,7 +108,7 @@ module.exports = {
   },
   getSellsData: async (req, res, next) => {
     try {
-      const data = await Sells.aggregate([
+      const sellsData = await Sells.aggregate([
         {
           $project: {
             invoiceNo: 1,
@@ -114,9 +128,30 @@ module.exports = {
           },
         },
       ]);
+      const deliveryChallanData = await DeliveryChallan.aggregate([
+        {
+          $project: {
+            deliveryChNo: 1,
+            invoiceDate: 1,
+            vehicleNo: 1,
+            isInvoiceCancel: 1,
+            name: "$buyerDetails.name",
+            address: "$buyerDetails.address",
+            gst: "$buyerDetails.gst",
+            state: "$buyerDetails.state",
+            totalProductAmount: "$productsSellDetails.totalProductAmount",
+            grandTotal: "$productsSellDetails.grandTotal",
+            gstAmount: "$productsSellDetails.gstAmount",
+            otherExpensesText: "$productsSellDetails.otherExpensesText",
+            otherExpenses: "$productsSellDetails.otherExpenses",
+            _id: "$deliveryChNo",
+            id: "$deliveryChNo",
+          },
+        },
+      ]);
       res.status(200).send({
         code: 200,
-        data,
+        data: [...sellsData, ...deliveryChallanData],
         message: "Sells data fetched successfully !",
       });
     } catch (err) {
@@ -126,8 +161,15 @@ module.exports = {
   },
   getSpecificSellData: async (req, res, next) => {
     try {
-      const { invoiceNo } = req.query;
-      const data = await Sells.findOne({ invoiceNo }).select("-_id -__v");
+      const { invoiceNo, deliveryChNo } = req.query;
+      let data = null;
+      if (invoiceNo) {
+        data = await Sells.findOne({ invoiceNo }).select("-_id -__v");
+      } else {
+        data = await DeliveryChallan.findOne({ deliveryChNo }).select(
+          "-_id -__v",
+        );
+      }
       res.status(200).send({
         code: 200,
         data,
@@ -205,7 +247,7 @@ module.exports = {
   },
   updateInvoice: async (req, res, next) => {
     try {
-      const { invoiceNo, isWholeInvoiceUpdate } = req.body;
+      const { invoiceNo, isWholeInvoiceUpdate, deliveryChNo } = req.body;
       if (isWholeInvoiceUpdate) {
         const payload = req.body;
         delete payload.isWholeInvoiceUpdate;
@@ -223,7 +265,15 @@ module.exports = {
         ) {
           delete payload.productsSellDetails.sgst;
         }
-        await Sells.findOneAndUpdate({ invoiceNo }, [{ $set: { ...payload } }]);
+        if (invoiceNo) {
+          await Sells.findOneAndUpdate({ invoiceNo }, [
+            { $set: { ...payload } },
+          ]);
+        } else {
+          await DeliveryChallan.findOneAndUpdate({ deliveryChNo }, [
+            { $set: { ...payload } },
+          ]);
+        }
       } else {
         await Sells.findOneAndUpdate({ invoiceNo }, [
           { $set: { isInvoiceCancel: { $eq: [false, "$isInvoiceCancel"] } } },
@@ -231,7 +281,9 @@ module.exports = {
       }
       res.status(200).send({
         code: 200,
-        message: "Invoice has been updated successfully !",
+        message: invoiceNo
+          ? "Invoice has been updated successfully !"
+          : "Deliver Challan has been updated successfully !",
       });
     } catch (err) {
       console.error(err);
