@@ -52,7 +52,7 @@ const ProductsSellDetailsSchema = new mongoose.Schema({
 
 const DeliveryChallanSchema = new mongoose.Schema(
   {
-    invoiceNo: {
+    deliveryChNo: {
       type: String,
       required: true,
       unique: true,
