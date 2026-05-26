@@ -7,7 +7,7 @@ module.exports = {
       const [startYear, endYear] = financialYear?.split("-");
       const regexDatePattern = new RegExp(
         `(?:\\d{1,2}-(?:Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-${startYear})|` +
-          `(?:\\d{1,2}-(?:Jan|Feb|Mar)-${endYear})`
+          `(?:\\d{1,2}-(?:Jan|Feb|Mar)-${endYear})`,
       );
       const data = await Sells.aggregate([
         {
@@ -51,7 +51,6 @@ module.exports = {
           },
         },
       ]);
-      console.log("33", data);
       res.status(200).send({
         code: 200,
         data,

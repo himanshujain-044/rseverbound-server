@@ -275,9 +275,15 @@ module.exports = {
           ]);
         }
       } else {
-        await Sells.findOneAndUpdate({ invoiceNo }, [
-          { $set: { isInvoiceCancel: { $eq: [false, "$isInvoiceCancel"] } } },
-        ]);
+        if (invoiceNo) {
+          await Sells.findOneAndUpdate({ invoiceNo }, [
+            { $set: { isInvoiceCancel: { $eq: [false, "$isInvoiceCancel"] } } },
+          ]);
+        } else {
+          await DeliveryChallan.findOneAndUpdate({ deliveryChNo }, [
+            { $set: { isInvoiceCancel: { $eq: [false, "$isInvoiceCancel"] } } },
+          ]);
+        }
       }
       res.status(200).send({
         code: 200,
