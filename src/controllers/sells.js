@@ -12,15 +12,21 @@ const {
   uniqueArray,
   getNextInvoiceNumber,
   getNextDeliveryChNumber,
+  numberToWords,
 } = require("../utility/common");
 const ErrorClass = require("../utility/error");
+const { sendEmail } = require("../utility/mail");
+const InvoiceTemp = require("../utility/mailTemplate");
+const ReportPdf = require("../utility/mailTemplate");
 
 module.exports = {
   saveInvoiceDetails: async (req, res, next) => {
     try {
+      const { default: ReactPDF, renderToBuffer } =
+        await import("@react-pdf/renderer");
+      const { Document, Page, Text, View, Image } = ReactPDF;
       const invoiceDetailsBody = req.body;
       const { billType } = req.body;
-      console.log("19", invoiceDetailsBody);
       if (billType === "invoice") {
         const invoice = new Sells(invoiceDetailsBody);
         await invoice.save();
@@ -101,6 +107,28 @@ module.exports = {
         { name: n, state: s, address: a, gst: g, placeOfSupply: s },
         { new: true, upsert: true },
       );
+
+      const pdfBuffer = await renderToBuffer(
+        InvoiceTemp({
+          Document,
+          Page,
+          Text,
+          View,
+          Image,
+          data: invoiceDetailsBody,
+        }),
+      );
+      await sendEmail({
+        to: ["shubhanshuj2222@gmail.com", "rseverbound@gmail.com"],
+        subject: `${invoiceDetailsBody?.invoiceNo ? "Invoice" : "Delivery Challan"} generated successfully !`,
+        attachments: [
+          {
+            filename: `${invoiceDetailsBody?.invoiceNo ? invoiceDetailsBody?.invoiceNo : invoiceDetailsBody?.deliveryChNo}_${invoiceDetailsBody?.date}_${invoiceDetailsBody?.buyerDetails?.name}.pdf`,
+            content: pdfBuffer,
+            contentType: "application/pdf",
+          },
+        ],
+      });
     } catch (err) {
       console.error(err);
       next(err);
@@ -247,12 +275,14 @@ module.exports = {
   },
   updateInvoice: async (req, res, next) => {
     try {
+      const { default: ReactPDF, renderToBuffer } =
+        await import("@react-pdf/renderer");
+      const { Document, Page, Text, View, Image } = ReactPDF;
       const { invoiceNo, isWholeInvoiceUpdate, deliveryChNo } = req.body;
+      const payload = req.body;
       if (isWholeInvoiceUpdate) {
-        const payload = req.body;
         delete payload.isWholeInvoiceUpdate;
         const sellInvoiceDet = await Sells.findOne({ invoiceNo });
-        console.log("210", sellInvoiceDet, "payload", payload);
         if (
           sellInvoiceDet?.productsSellDetails?.igst &&
           payload?.productsSellDetails?.sgst
@@ -291,6 +321,29 @@ module.exports = {
           ? "Invoice has been updated successfully !"
           : "Deliver Challan has been updated successfully !",
       });
+      if (isWholeInvoiceUpdate) {
+        const pdfBuffer = await renderToBuffer(
+          InvoiceTemp({
+            Document,
+            Page,
+            Text,
+            View,
+            Image,
+            data: payload,
+          }),
+        );
+        await sendEmail({
+          to: ["shubhanshuj2222@gmail.com", "rseverbound@gmail.com"],
+          subject: `${invoiceNo ? "Invoice" : "Delivery Challan"} updated successfully !`,
+          attachments: [
+            {
+              filename: `${invoiceNo ? invoiceNo : deliveryChNo}_${payload?.invoiceDate}_${payload?.buyerDetails?.name}.pdf`,
+              content: pdfBuffer,
+              contentType: "application/pdf",
+            },
+          ],
+        });
+      }
     } catch (err) {
       console.error(err);
       next(err);

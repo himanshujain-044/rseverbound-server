@@ -1,6 +1,6 @@
 const { AES, enc } = require("crypto-js");
 const moment = require("moment");
-const { OTP_TYPE } = require("../constants/enum");
+const { OTP_TYPE, NUMBERS_DIGITS_UNITS } = require("../constants/enum");
 
 module.exports.decryptPassword = (password = "") => {
   return AES.decrypt(password, process.env.ENCRYPTED_SECRET).toString(enc.Utf8);
@@ -118,4 +118,66 @@ module.exports.getNextDeliveryChNumber = (lastDeliveryChNumber) => {
   }
   const paddedCounter = String(nextCounter).padStart(2, "0");
   return `DEL/${currentFinYearStr}/${paddedCounter}`;
+};
+
+module.exports.numberToWords = (number) => {
+  let [num, decimalPoints] = String(number)?.split(".");
+  if ((num = num.toString()).length > 9) return "Overflow";
+  let n = ("000000000" + num)
+    .substr(-9)
+    .match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+  if (!n) return;
+  var str = "";
+  str +=
+    n[1] != 0
+      ? (NUMBERS_DIGITS_UNITS.TEENS[Number(n[1])] ||
+          NUMBERS_DIGITS_UNITS.TENS[n[1][0]] +
+            " " +
+            NUMBERS_DIGITS_UNITS.TEENS[n[1][1]]) + "Crore "
+      : "";
+  str +=
+    n[2] != 0
+      ? (NUMBERS_DIGITS_UNITS.TEENS[Number(n[2])] ||
+          NUMBERS_DIGITS_UNITS.TENS[n[2][0]] +
+            " " +
+            NUMBERS_DIGITS_UNITS.TEENS[n[2][1]]) + "Lakh "
+      : "";
+  str +=
+    n[3] != 0
+      ? (NUMBERS_DIGITS_UNITS.TEENS[Number(n[3])] ||
+          NUMBERS_DIGITS_UNITS.TENS[n[3][0]] +
+            " " +
+            NUMBERS_DIGITS_UNITS.TEENS[n[3][1]]) + "Thousand "
+      : "";
+  str +=
+    n[4] != 0
+      ? (NUMBERS_DIGITS_UNITS.TEENS[Number(n[4])] ||
+          NUMBERS_DIGITS_UNITS.TENS[n[4][0]] +
+            " " +
+            NUMBERS_DIGITS_UNITS.TEENS[n[4][1]]) + "Hundred "
+      : "";
+  str +=
+    n[5] != 0
+      ? (str != "" ? "and " : "") +
+        (NUMBERS_DIGITS_UNITS.TEENS[Number(n[5])] ||
+          NUMBERS_DIGITS_UNITS.TENS[n[5][0]] +
+            " " +
+            NUMBERS_DIGITS_UNITS.TEENS[n[5][1]]) +
+        ""
+      : "";
+  // const decArr = decimalPoints?.split("");
+  // if (decArr?.length) {
+  //   const lastDecmal = NUMBERS_DIGITS_UNITS.TEENS[decArr?.[1]]
+  //     ? NUMBERS_DIGITS_UNITS.TEENS[decArr?.[1]]
+  //     : "";
+  //   return (
+  //     str +
+  //     "Points " +
+  //     NUMBERS_DIGITS_UNITS.TEENS[decArr[0]] +
+  //     lastDecmal +
+  //     " Only"
+  //   );
+  // } else {
+  return str?.length ? str + " Only" : "";
+  // }
 };
