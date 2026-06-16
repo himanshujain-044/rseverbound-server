@@ -23,6 +23,7 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
   return React.createElement(
     Document,
     { title: pdfTitle, key: pdfTitle },
+
     React.createElement(
       Page,
       {
@@ -37,66 +38,84 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
         key: "pdf-page",
       },
 
-      // --- HEADER BLOCK ---
+      // ─── Header Row ───────────────────────────────────────────────
       React.createElement(
         View,
         { style: styles.section },
+
         React.createElement(Image, {
-          style: { padding: "2px", width: "45px" },
+          style: {
+            padding: "2px",
+            width: "98px",
+            height: "88px",
+          },
           src: logo,
-          alt: "logo",
         }),
+
         React.createElement(
-          Text,
+          View,
           {
             style: {
-              textDecoration: "underline",
-              width: "80%",
+              width: "76%",
               textAlign: "center",
               padding: "4px",
-              paddingTop: "14px",
             },
           },
-          data?.invoiceNo ? "TAX INVOICE" : "DELIVERY CHALLAN",
+          React.createElement(
+            Text,
+            { style: { textDecoration: "underline" } },
+            data?.invoiceNo ? "TAX INVOICE" : "DELIVERY CHALLAN",
+          ),
+          React.createElement(
+            Text,
+            {
+              style: {
+                fontFamily: "Times-Bold",
+                fontSize: "16px",
+                marginBottom: "4px",
+              },
+            },
+            "Rocksunn Private Limited",
+          ),
+          React.createElement(
+            Text,
+            { style: { lineHeight: 0.65 } },
+            React.createElement(
+              Text,
+              null,
+              "NEAR VIVEKANAND COLLEGE, AMAMRMOU, SHAHGARH, \n",
+            ),
+            React.createElement(
+              Text,
+              null,
+              " SAGAR, MADHYA PRADESH - 470339 \n",
+            ),
+            React.createElement(Text, null, "PAN : AAPCR7561K \n"),
+            React.createElement(
+              Text,
+              { style: { fontFamily: "Helvetica-Bold" } },
+              "GSTIN/UIN : 23AAPCR7561K1ZT",
+            ),
+          ),
+        ),
+
+        React.createElement(
+          Text,
+          { style: { marginRight: "4px" } },
+          "Original Copy",
         ),
       ),
 
-      // --- SENDER & INVOICE META BLOCK ---
+      // ─── Invoice / Date Row ───────────────────────────────────────
       React.createElement(
         View,
-        { style: { ...styles.section } },
-        React.createElement(
-          View,
-          { style: { width: "45%", paddingLeft: "2px", paddingTop: "2px" } },
-          React.createElement(
-            Text,
-            { style: { fontFamily: "Times-Bold", fontSize: "13px" } },
-            "Rocksunn Private Limited",
-          ),
-          React.createElement(Text, null, "NEAR VIVEKANAND COLLEGE,"),
-          React.createElement(
-            Text,
-            null,
-            "AMAMRMOU, SHAHGARH, SAGAR - 470339, MP, INDIA",
-          ),
-          React.createElement(
-            Text,
-            { style: { fontFamily: "Helvetica-Bold" } },
-            "GSTIN/UIN: 23AAPCR7561K1ZT",
-          ),
-          React.createElement(
-            Text,
-            null,
-            "State Name: Madhya Pradesh, Code: 23",
-          ),
-          React.createElement(Text, null, "Contact - 8349112391"),
-        ),
+        { style: styles.section },
+
         React.createElement(
           View,
           {
             style: {
-              width: "30%",
-              borderLeft: "1px solid black",
+              width: "50%",
               paddingTop: "2px",
             },
           },
@@ -116,20 +135,21 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
           React.createElement(
             Text,
             { style: { paddingLeft: "2px", paddingTop: "2px" } },
-            `${data?.buyerOrderNoText || ""} - ${data?.buyerOrderNoValue || ""}`,
+            `${data?.buyerOrderNoText} - ${data?.buyerOrderNoValue}`,
           ),
           React.createElement(
             Text,
             { style: { paddingLeft: "2px", paddingTop: "2px" } },
-            `Date - ${data?.date || ""}`,
+            `Date - ${data?.date}`,
           ),
         ),
+
         React.createElement(
           View,
           {
             style: {
-              width: "25%",
               borderLeft: "1px solid black",
+              width: "50%",
               paddingTop: "2px",
             },
           },
@@ -149,49 +169,57 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
           React.createElement(
             Text,
             { style: { paddingLeft: "2px", paddingTop: "2px" } },
-            `Dispatch Through - ${data?.dispatchThrough || ""}`,
+            `Dispatch Through - ${data?.dispatchThrough}`,
           ),
           React.createElement(
             Text,
             { style: { paddingLeft: "2px", paddingTop: "2px" } },
-            `Destination - ${data?.destination || ""}`,
+            `Destination - ${data?.destination}`,
           ),
         ),
       ),
 
-      // --- BUYER & CONSIGNEE BLOCK ---
+      // ─── Buyer / Consignee Row ────────────────────────────────────
       React.createElement(
         View,
         { style: styles.section },
+
         React.createElement(
           View,
-          { style: { width: "45%", paddingLeft: "2px", paddingTop: "2px" } },
+          {
+            style: {
+              width: "50%",
+              paddingLeft: "2px",
+              paddingTop: "2px",
+            },
+          },
           React.createElement(
             Text,
             { style: { fontFamily: "Helvetica-Bold" } },
-            `Buyer (Bill To) - ${data?.buyerDetails?.name || ""}`,
+            `Buyer (Bill To) - ${data?.buyerDetails?.name}`,
           ),
           React.createElement(
             Text,
             null,
-            `Address - ${data?.buyerDetails?.address || ""}`,
+            `Address - ${data?.buyerDetails?.address}`,
           ),
           React.createElement(
             Text,
             { style: { fontFamily: "Helvetica-Bold" } },
-            `GSTIN/UIN: ${data?.buyerDetails?.gst || ""}`,
+            `GSTIN/UIN: ${data?.buyerDetails?.gst}`,
           ),
           React.createElement(
             Text,
             null,
-            `State - ${data?.buyerDetails?.state || ""}`,
+            `State - ${data?.buyerDetails?.state}`,
           ),
           React.createElement(
             Text,
             null,
-            `Place Of Supply - ${data?.buyerDetails?.placeOfSupply || ""}`,
+            `Place Of Supply - ${data?.buyerDetails?.placeOfSupply}`,
           ),
         ),
+
         React.createElement(
           View,
           {
@@ -205,35 +233,43 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
           React.createElement(
             Text,
             { style: { fontFamily: "Helvetica-Bold" } },
-            `Consignee (Ship To) - ${data?.shipToDetails?.name || ""}`,
+            `Consignee (Ship To) - ${data?.shipToDetails?.name}`,
           ),
           React.createElement(
             Text,
             null,
-            `Address - ${data?.shipToDetails?.address || ""}`,
+            `Address - ${data?.shipToDetails?.address}`,
           ),
           React.createElement(
             Text,
             { style: { fontFamily: "Helvetica-Bold" } },
-            `GSTIN/UIN: ${data?.shipToDetails?.gst || ""}`,
+            `GSTIN/UIN: ${data?.shipToDetails?.gst}`,
           ),
           React.createElement(
             Text,
             null,
-            `State - ${data?.shipToDetails?.state || ""}`,
+            `State - ${data?.shipToDetails?.state}`,
           ),
         ),
       ),
 
-      // --- TABLE HEADER BLOCK ---
+      // ─── Table Header Row ─────────────────────────────────────────
       React.createElement(
         View,
         { style: { ...styles.section, fontFamily: "Helvetica-Bold" } },
+
         React.createElement(
           View,
-          { style: { width: "6%", paddingTop: "5px", textAlign: "center" } },
+          {
+            style: {
+              width: "6%",
+              paddingTop: "5px",
+              textAlign: "center",
+            },
+          },
           React.createElement(Text, null, "S. No"),
         ),
+
         React.createElement(
           View,
           {
@@ -246,6 +282,7 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
           },
           React.createElement(Text, null, "Description of Goods"),
         ),
+
         React.createElement(
           View,
           {
@@ -258,6 +295,7 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
           },
           React.createElement(Text, null, "HSN Code"),
         ),
+
         React.createElement(
           View,
           {
@@ -270,6 +308,7 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
           },
           React.createElement(Text, null, "Quantity"),
         ),
+
         React.createElement(
           View,
           {
@@ -282,6 +321,7 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
           },
           React.createElement(Text, null, "Unit"),
         ),
+
         React.createElement(
           View,
           {
@@ -294,6 +334,7 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
           },
           React.createElement(Text, null, "Rate"),
         ),
+
         React.createElement(
           View,
           {
@@ -308,125 +349,129 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
         ),
       ),
 
-      // --- DYNAMIC PRODUCT ITERATION (MAP) ---
-      (data?.productsSellDetails?.productsSell || []).map(
-        (productSell, index) => {
-          return React.createElement(
+      // ─── Product Rows ─────────────────────────────────────────────
+      ...data?.productsSellDetails?.productsSell?.map((productSell) =>
+        React.createElement(
+          View,
+          { style: styles.section },
+
+          React.createElement(
             View,
-            { style: styles.section, key: `product-${index}` },
-            React.createElement(
-              View,
-              {
-                style: {
-                  width: "6%",
-                  paddingLeft: "2px",
-                  paddingTop: "5px",
-                  textAlign: "center",
-                },
+            {
+              style: {
+                width: "6%",
+                paddingLeft: "2px",
+                paddingTop: "5px",
+                textAlign: "center",
               },
-              React.createElement(Text, null, productSell?.sNo),
-            ),
-            React.createElement(
-              View,
-              {
-                style: {
-                  width: "30%",
-                  borderLeft: "1px solid black",
-                  paddingLeft: "2px",
-                  paddingTop: "5px",
-                  fontFamily: "Helvetica-Bold",
-                  textAlign: "center",
-                },
+            },
+            React.createElement(Text, null, productSell?.sNo),
+          ),
+
+          React.createElement(
+            View,
+            {
+              style: {
+                width: "30%",
+                borderLeft: "1px solid black",
+                paddingLeft: "2px",
+                paddingTop: "5px",
+                fontFamily: "Helvetica-Bold",
+                textAlign: "center",
               },
-              React.createElement(Text, null, productSell?.description),
-            ),
-            React.createElement(
-              View,
-              {
-                style: {
-                  width: "13%",
-                  borderLeft: "1px solid black",
-                  paddingLeft: "2px",
-                  paddingTop: "5px",
-                  textAlign: "center",
-                },
+            },
+            React.createElement(Text, null, productSell?.description),
+          ),
+
+          React.createElement(
+            View,
+            {
+              style: {
+                width: "13%",
+                borderLeft: "1px solid black",
+                paddingLeft: "2px",
+                paddingTop: "5px",
+                textAlign: "center",
               },
-              React.createElement(Text, null, productSell?.hsnCode),
-            ),
-            React.createElement(
-              View,
-              {
-                style: {
-                  width: "16%",
-                  borderLeft: "1px solid black",
-                  paddingLeft: "2px",
-                  paddingTop: "5px",
-                  fontFamily: "Helvetica-Bold",
-                  textAlign: "center",
-                },
+            },
+            React.createElement(Text, null, productSell?.hsnCode),
+          ),
+
+          React.createElement(
+            View,
+            {
+              style: {
+                width: "16%",
+                borderLeft: "1px solid black",
+                paddingLeft: "2px",
+                paddingTop: "5px",
+                fontFamily: "Helvetica-Bold",
+                textAlign: "center",
               },
-              React.createElement(Text, null, productSell?.quantity),
-            ),
-            React.createElement(
-              View,
-              {
-                style: {
-                  width: "26%",
-                  borderLeft: "1px solid black",
-                  paddingLeft: "2px",
-                  paddingTop: "5px",
-                  fontFamily: "Helvetica-Bold",
-                  textAlign: "center",
-                },
+            },
+            React.createElement(Text, null, productSell?.quantity),
+          ),
+
+          React.createElement(
+            View,
+            {
+              style: {
+                width: "26%",
+                borderLeft: "1px solid black",
+                paddingLeft: "2px",
+                paddingTop: "5px",
+                fontFamily: "Helvetica-Bold",
+                textAlign: "center",
               },
-              React.createElement(Text, null, productSell?.unit),
-            ),
-            React.createElement(
-              View,
-              {
-                style: {
-                  width: "13%",
-                  borderLeft: "1px solid black",
-                  paddingLeft: "2px",
-                  paddingTop: "5px",
-                  textAlign: "center",
-                },
+            },
+            React.createElement(Text, null, productSell?.unit),
+          ),
+
+          React.createElement(
+            View,
+            {
+              style: {
+                width: "13%",
+                borderLeft: "1px solid black",
+                paddingLeft: "2px",
+                paddingTop: "5px",
+                textAlign: "center",
               },
-              React.createElement(Text, null, productSell?.ratePMT),
-            ),
-            React.createElement(
-              View,
-              {
-                style: {
-                  width: "30%",
-                  borderLeft: "1px solid black",
-                  paddingRight: "2px",
-                  paddingTop: "5px",
-                  textAlign: "center",
-                  fontFamily: "Helvetica-Bold",
-                },
+            },
+            React.createElement(Text, null, productSell?.ratePMT),
+          ),
+
+          React.createElement(
+            View,
+            {
+              style: {
+                width: "30%",
+                borderLeft: "1px solid black",
+                paddingRight: "2px",
+                paddingTop: "5px",
+                textAlign: "center",
+                fontFamily: "Helvetica-Bold",
               },
-              React.createElement(Text, null, productSell?.amount),
-            ),
-          );
-        },
+            },
+            React.createElement(Text, null, productSell?.amount),
+          ),
+        ),
       ),
 
-      // --- SPACING & VALUATION SECTION ---
+      // ─── Totals / GST Section ─────────────────────────────────────
       React.createElement(
         View,
         { style: styles.section },
-        React.createElement(
-          View,
-          {
-            style: {
-              width: "61.9%",
-              paddingTop: "2px",
-              paddingBottom: `${220 - (data?.productsSellDetails?.productsSell?.length || 0) * 10}px`,
-            },
+
+        React.createElement(View, {
+          style: {
+            width: "61.9%",
+            paddingTop: "2px",
+            paddingBottom: "20px",
+            marginBottom: "52px",
           },
-          React.createElement(Text, null),
-        ),
+        }),
+
         data?.invoiceNo
           ? React.createElement(
               View,
@@ -440,6 +485,7 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
                   justifyContent: "space-between",
                 },
               },
+
               React.createElement(
                 View,
                 { style: { paddingLeft: "2px" } },
@@ -453,29 +499,27 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
                   { style: { fontFamily: "Helvetica-Bold" } },
                   "Taxable Value",
                 ),
-                data?.productsSellDetails?.igst
-                  ? React.createElement(
+                data?.productsSellDetails?.igst &&
+                  React.createElement(
+                    Text,
+                    null,
+                    `IGST - ${data?.productsSellDetails?.igst} %`,
+                  ),
+                data?.productsSellDetails?.sgst &&
+                  React.createElement(
+                    React.Fragment,
+                    null,
+                    React.createElement(
                       Text,
                       null,
-                      `IGST - ${data?.productsSellDetails?.igst} %`,
-                    )
-                  : null,
-                data?.productsSellDetails?.sgst
-                  ? React.createElement(
-                      React.Fragment,
+                      `SGST - ${Number(data?.productsSellDetails?.sgst) / 2}  %`,
+                    ),
+                    React.createElement(
+                      Text,
                       null,
-                      React.createElement(
-                        Text,
-                        null,
-                        `SGST - ${Number(data?.productsSellDetails?.sgst) / 2}  %`,
-                      ),
-                      React.createElement(
-                        Text,
-                        null,
-                        `CGST - ${Number(data?.productsSellDetails?.sgst) / 2} %`,
-                      ),
-                    )
-                  : null,
+                      `CGST - ${Number(data?.productsSellDetails?.sgst / 2)} %`,
+                    ),
+                  ),
                 React.createElement(
                   Text,
                   null,
@@ -483,6 +527,7 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
                 ),
                 React.createElement(Text, null, "Round Off"),
               ),
+
               React.createElement(
                 View,
                 { style: { fontFamily: "Times-Italic" } },
@@ -497,35 +542,31 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
                   Text,
                   { style: { fontFamily: "Helvetica-Bold" } },
                   Number(
-                    (Number(data?.productsSellDetails?.totalProductAmount) ||
-                      0) +
-                      (Number(data?.productsSellDetails?.otherExpensesGST) ||
-                        0),
+                    Number(data?.productsSellDetails?.totalProductAmount) +
+                      Number(data?.productsSellDetails?.otherExpensesGST),
                   ).toFixed(2),
                 ),
-                data?.productsSellDetails?.igst
-                  ? React.createElement(
+                data?.productsSellDetails?.igst &&
+                  React.createElement(
+                    Text,
+                    null,
+                    data?.productsSellDetails?.gstAmount,
+                  ),
+                data?.productsSellDetails?.sgst &&
+                  React.createElement(
+                    React.Fragment,
+                    null,
+                    React.createElement(
                       Text,
                       null,
-                      data?.productsSellDetails?.gstAmount,
-                    )
-                  : null,
-                data?.productsSellDetails?.sgst
-                  ? React.createElement(
-                      React.Fragment,
+                      Number(data?.productsSellDetails?.gstAmount) / 2,
+                    ),
+                    React.createElement(
+                      Text,
                       null,
-                      React.createElement(
-                        Text,
-                        null,
-                        Number(data?.productsSellDetails?.gstAmount) / 2,
-                      ),
-                      React.createElement(
-                        Text,
-                        null,
-                        Number(data?.productsSellDetails?.gstAmount) / 2,
-                      ),
-                    )
-                  : null,
+                      Number(data?.productsSellDetails?.gstAmount) / 2,
+                    ),
+                  ),
                 React.createElement(
                   Text,
                   null,
@@ -536,7 +577,7 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
                 React.createElement(
                   Text,
                   null,
-                  `${data?.productsSellDetails?.roundOff?.added ? "+" : "-"} ${data?.productsSellDetails?.roundOff?.amountInPaise || ""}`,
+                  `${data?.productsSellDetails?.roundOff?.added ? "+" : "-"}${data?.productsSellDetails?.roundOff?.amountInPaise}`,
                 ),
               ),
             )
@@ -552,6 +593,7 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
                   justifyContent: "space-between",
                 },
               },
+
               React.createElement(
                 View,
                 { style: { paddingLeft: "2px" } },
@@ -566,6 +608,7 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
                   "Total Value",
                 ),
               ),
+
               React.createElement(
                 View,
                 { style: { fontFamily: "Times-Italic" } },
@@ -578,10 +621,11 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
             ),
       ),
 
-      // --- GRAND TOTAL BLOCK ---
+      // ─── Grand Total Row ──────────────────────────────────────────
       React.createElement(
         View,
         { style: { ...styles.section, fontFamily: "Helvetica-Bold" } },
+
         React.createElement(
           View,
           {
@@ -595,6 +639,7 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
           },
           React.createElement(Text, null, "Grand Total"),
         ),
+
         React.createElement(
           View,
           {
@@ -616,20 +661,32 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
         ),
       ),
 
-      // --- WORDS BLOCK ---
+      // ─── Amount in Words Row ──────────────────────────────────────
       React.createElement(
         View,
         { style: styles.section },
+
         React.createElement(
           View,
-          { style: { width: "85%", paddingLeft: "2px", paddingTop: "2px" } },
+          {
+            style: {
+              width: "85%",
+              paddingLeft: "2px",
+              paddingTop: "2px",
+            },
+          },
           React.createElement(Text, null, "Amount in words"),
           React.createElement(
             Text,
             { style: { fontFamily: "Helvetica-Bold" } },
-            `INDIAN RUPEE: ${data?.invoiceNo ? numberToWords(data?.productsSellDetails?.grandTotal) : numberToWords(data?.productsSellDetails?.totalProductAmount)}`,
+            `INDIAN RUPEE: ${
+              data?.invoiceNo
+                ? numberToWords(data?.productsSellDetails?.grandTotal)
+                : numberToWords(data?.productsSellDetails?.totalProductAmount)
+            }`,
           ),
         ),
+
         React.createElement(
           View,
           {
@@ -644,11 +701,12 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
         ),
       ),
 
-      // --- TERMS & SIGNATURE BLOCK ---
+      // ─── Terms / Signature Row ────────────────────────────────────
       data?.invoiceNo
         ? React.createElement(
             View,
             { style: styles.section },
+
             React.createElement(
               View,
               {
@@ -676,6 +734,7 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
                 "c) For payment made by electronic fund transfer, please send details to receipt@rseverbound.com (Invoice number, Invoice amount, Rocksunn Bank name and Account number, Payment date, Amount paid, TDS). Queries can be sent to us at receipt@rseverbound.com.",
               ),
             ),
+
             React.createElement(
               View,
               {
@@ -686,6 +745,7 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
                   paddingTop: "2px",
                 },
               },
+
               React.createElement(
                 View,
                 { style: { paddingLeft: "2px", fontFamily: "Helvetica-Bold" } },
@@ -703,6 +763,7 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
                   "Branch & IFSC Code: SHAHGARH, SAGAR (M.P.) & CBIN0282030",
                 ),
               ),
+
               React.createElement(
                 View,
                 {
@@ -733,6 +794,7 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
         : React.createElement(
             View,
             { style: styles.section },
+
             React.createElement(
               View,
               {
@@ -759,23 +821,23 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
             ),
           ),
 
+      // ─── Bottom Border ────────────────────────────────────────────
       React.createElement(View, {
         style: { borderBottomWidth: 1, borderBottomColor: "black" },
       }),
 
-      // --- WATERMARK CANCELLED OVERLAY ---
-      data?.isInvoiceCancel
-        ? React.createElement(Image, {
-            style: {
-              position: "absolute",
-              display: "block",
-              height: "100%",
-              width: "100%",
-              zIndex: "-1",
-            },
-            src: cancelled,
-          })
-        : null,
+      // ─── Cancelled Watermark (conditional) ───────────────────────
+      data?.isInvoiceCancel &&
+        React.createElement(Image, {
+          style: {
+            position: "absolute",
+            display: "block",
+            height: "100%",
+            width: "100%",
+            zIndex: "-1",
+          },
+          src: cancelled,
+        }),
     ),
   );
 };
