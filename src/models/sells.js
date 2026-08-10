@@ -37,6 +37,12 @@ const ProductsSellDetailsSchema = new mongoose.Schema({
   otherExpensesText: {
     type: String,
   },
+  otherExpenses2: {
+    type: Number,
+  },
+  otherExpensesText2: {
+    type: String,
+  },
   otherExpensesGST: {
     type: Number,
   },

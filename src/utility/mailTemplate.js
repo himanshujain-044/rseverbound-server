@@ -525,6 +525,11 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
                   null,
                   data?.productsSellDetails?.otherExpensesText,
                 ),
+                React.createElement(
+                  Text,
+                  null,
+                  data?.productsSellDetails?.otherExpensesText2,
+                ),
                 React.createElement(Text, null, "Round Off"),
               ),
 
@@ -572,6 +577,13 @@ const InvoiceTemp = ({ Document, Page, Text, View, Image, data = {} }) => {
                   null,
                   data?.productsSellDetails?.otherExpenses > 0
                     ? data?.productsSellDetails?.otherExpenses
+                    : "",
+                ),
+                React.createElement(
+                  Text,
+                  null,
+                  data?.productsSellDetails?.otherExpenses2 > 0
+                    ? data?.productsSellDetails?.otherExpenses2
                     : "",
                 ),
                 React.createElement(

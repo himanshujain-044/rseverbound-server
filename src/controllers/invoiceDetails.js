@@ -13,6 +13,7 @@ module.exports = {
         (await InvoiceDetails.findOne().select(
           "-_id nextInvoiceNo nextDeliveryChNo hsnCodes igst cgst sgst vehicles destinations units gsts products transportCompanies",
         )) || {};
+      invoiceDetails?.products?.sort();
       res.status(200).send({
         code: 200,
         message: "Invoice details fetched successfully !",
